@@ -1,14 +1,21 @@
 site_name: Результаты исследований
 site_description: Отчёты по теоретическому и практическому заданиям курса РРиИД Python
-site_url: https://crasavella04.github.io/python-lab3/
+# Адрес зависит от площадки: в CI передаётся через SITE_URL (GitHub Pages / Helios)
+site_url: !ENV [SITE_URL, 'https://crasavella04.github.io/python-lab3/']
 repo_url: https://github.com/crasavella04/python-lab3
 repo_name: crasavella04/python-lab3
 edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
+# Ссылки вида about/ вместо about.html; MkDocs делает их относительными,
+# поэтому сайт работает в любом подкаталоге (/python-lab3/, /~login/...)
+use_directory_urls: true
 
 theme:
   name: material
+  custom_dir: overrides
+  # Не грузить Roboto с Google Fonts: сайт не должен зависеть от внешних CDN
+  font: false
   language: ru
   features:
     - navigation.instant
@@ -52,6 +59,19 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.arithmatex:
       generic: true
+
+extra:
+  build:
+    commit: !ENV [GITHUB_SHA, local]
+    target: !ENV [DEPLOY_TARGET, local]
+
+extra_javascript:
+  - assets/katex/katex.min.js
+  - assets/katex/auto-render.min.js
+  - javascripts/katex-init.js
+
+extra_css:
+  - assets/katex/katex.min.css
 
 validation:
   nav:

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {#- Контрольная строка: по ней проверяется, что на хостинг выкачена нужная сборка -#}
+  <meta name="build-marker" content="python-lab3:{{ config.extra.build.commit }}:{{ config.extra.build.target }}">
+{% endblock %}

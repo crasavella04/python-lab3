@@ -1,4 +1,4 @@
-name: Build and deploy to GitHub Pages
+name: Build and deploy
 
 on:
   push:
@@ -9,43 +9,110 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Одновременно идёт только один деплой; уже запущенный не прерываем
 concurrency:
-  group: pages
+  group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  PYTHON_VERSION: "3.14"
+
 jobs:
-  build:
+  # ---------- GitHub Pages ----------
+  build-pages:
     runs-on: ubuntu-latest
+    env:
+      SITE_URL: https://crasavella04.github.io/python-lab3/
+      DEPLOY_TARGET: github-pages
     steps:
       - uses: actions/checkout@v5
-
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
+      - run: pip install -r requirements.txt
       - name: Build site (strict)
         run: mkdocs build --strict
-
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
-  deploy:
+  deploy-pages:
     # В PR только проверяем сборку, публикуем лишь из main
     if: github.event_name != 'pull_request'
-    needs: build
+    needs: build-pages
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v5
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify deployed site
+        run: python scripts/check_site.py "${{ steps.deployment.outputs.page_url }}" --commit "$GITHUB_SHA" --target github-pages
+
+  # ---------- Helios ИТМО ----------
+  # Настройки площадки: Settings → Secrets and variables → Actions
+  #   variables: HELIOS_HOST, HELIOS_PORT, HELIOS_USER, HELIOS_PATH (public_html/python-lab3), HELIOS_URL
+  #   secret:    HELIOS_SSH_KEY (приватный ключ, публичный — в ~/.ssh/authorized_keys на Helios)
+  # Пока переменные не заданы, job пропускается и не валит workflow.
+  deploy-helios:
+    if: github.event_name != 'pull_request' && vars.HELIOS_USER != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: helios
+      url: ${{ vars.HELIOS_URL }}
+    env:
+      # Сайт лежит в подкаталоге (/~sXXXXXX/python-lab3/), поэтому site_url свой, не как на Pages
+      SITE_URL: ${{ vars.HELIOS_URL }}
+      DEPLOY_TARGET: helios
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build site (strict)
+        run: mkdocs build --strict
+
+      - name: Add .htaccess (404 page for Apache)
+        # ErrorDocument требует путь от корня сервера, т.е. с учётом подкаталога
+        run: |
+          base_path=$(python -c "import urllib.parse,sys; print(urllib.parse.urlsplit(sys.argv[1]).path)" "$SITE_URL")
+          printf 'ErrorDocument 404 %s404.html\nOptions -Indexes\n' "$base_path" > site/.htaccess
+          cat site/.htaccess
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.HELIOS_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/helios
+          chmod 600 ~/.ssh/helios
+          ssh-keyscan -p "${{ vars.HELIOS_PORT }}" "${{ vars.HELIOS_HOST }}" >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<EOF
+          Host helios
+            HostName ${{ vars.HELIOS_HOST }}
+            Port ${{ vars.HELIOS_PORT }}
+            User ${{ vars.HELIOS_USER }}
+            IdentityFile ~/.ssh/helios
+          EOF
+
+      - name: Upload to Helios
+        # tar через ssh: не требует rsync на сервере. Каталог очищается целиком,
+        # поэтому HELIOS_PATH — отдельный подкаталог относительно домашнего, например public_html/python-lab3.
+        env:
+          DEST: ${{ vars.HELIOS_PATH }}
+        run: |
+          case "$DEST" in *..*|*\'*) echo "Недопустимый HELIOS_PATH: $DEST"; exit 1;; esac
+          case "$DEST" in public_html/?*) ;; *) echo "HELIOS_PATH должен быть подкаталогом public_html: $DEST"; exit 1;; esac
+          tar -C site -czf - . | ssh helios "rm -rf '$DEST' && mkdir -p '$DEST' && tar -xzf - -C '$DEST' && chmod -R a+rX '$DEST'"
+
+      - name: Verify deployed site
+        run: python scripts/check_site.py "$SITE_URL" --commit "$GITHUB_SHA" --target helios
