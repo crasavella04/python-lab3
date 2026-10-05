@@ -1,0 +1,26 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Каталоги сборки SSG
+site/
+_build/
+build/
+dist/
+output/
+
+# Кэш
+__pycache__/
+*.py[cod]
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / ОС / локальные настройки
+.claude/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
