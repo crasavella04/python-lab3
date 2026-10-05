@@ -1,5 +1,9 @@
 site_name: Результаты исследований
 site_description: Отчёты по теоретическому и практическому заданиям курса РРиИД Python
+site_url: https://crasavella04.github.io/python-lab3/
+repo_url: https://github.com/crasavella04/python-lab3
+repo_name: crasavella04/python-lab3
+edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
 
