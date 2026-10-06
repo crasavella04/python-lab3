@@ -81,12 +81,8 @@ jobs:
       - name: Build site (strict)
         run: mkdocs build --strict
 
-      - name: Add .htaccess (404 page for Apache)
-        # ErrorDocument требует путь от корня сервера, т.е. с учётом подкаталога
-        run: |
-          base_path=$(python -c "import urllib.parse,sys; print(urllib.parse.urlsplit(sys.argv[1]).path)" "$SITE_URL")
-          printf 'ErrorDocument 404 %s404.html\nOptions -Indexes\n' "$base_path" > site/.htaccess
-          cat site/.htaccess
+      # .htaccess не кладём: Apache на Helios не разрешает в нём Options/ErrorDocument
+      # и отвечает 500 на весь каталог. Несуществующие страницы получают стандартный 404 сервера.
 
       - name: Configure SSH
         env:
