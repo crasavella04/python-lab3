@@ -5,3 +5,4 @@ myst-parser==5.1.0
 furo==2025.12.19
 sphinx-design==0.7.0
 sphinx-sitemap==2.9.0
+spylls==0.1.7   # проверка орфографии (стадия lint), Hunspell на чистом Python

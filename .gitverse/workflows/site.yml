@@ -1,0 +1,112 @@
+# P1. Пайплайн публикации сайта на GitVerse: lint → build → deploy.
+#
+# Переменные репозитория (Настройки → Секреты и переменные):
+#   PAGES_URL  — адрес сайта на GitVerse Pages, например https://<владелец>.gitverse.site/python-lab3/
+# Секреты:
+#   MASK_CHECK — произвольная строка; печатается в лог для проверки маскирования (должна стать ***)
+# В настройках Pages источник публикации = Workflow.
+
+name: Сайт
+
+on:
+  push:
+    branches: ["**"]          # любая ветка: lint и build; деплой — только из main (см. deploy.if)
+  pull_request:
+    branches: [main]          # PR в main: lint и build, без деплоя
+  workflow_dispatch:          # ручной запуск
+  schedule:
+    - cron: "0 6 * * 1"       # по понедельникам: ловим «протухшие» внешние ссылки без коммитов
+
+env:
+  PYTHON_VERSION: "3.14.7"    # точная версия, а не 3.14: воспроизводимость на чистом раннере
+
+jobs:
+  lint:
+    name: lint (ссылки, орфография, строгая сборка)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # даты страниц в sitemap и подвале берутся из истории Git
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Кэш pip
+        id: pipcache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Установка зависимостей (замер времени)
+        run: |
+          start=$(date +%s)
+          pip install --disable-pip-version-check --require-hashes -r requirements.txt
+          echo "pip install: $(( $(date +%s) - start )) с; кэш найден: ${{ steps.pipcache.outputs.cache-hit || 'false' }}"
+
+      - name: Проверка маскирования секретов
+        # В PR из форков секреты не передаются (T4), поэтому проверка только для push и ручного запуска
+        if: github.event_name != 'pull_request'
+        env:
+          MASK_CHECK: ${{ secrets.MASK_CHECK }}
+        run: |
+          if [ -z "$MASK_CHECK" ]; then echo "Секрет MASK_CHECK не задан"; exit 1; fi
+          echo "Значение секрета: $MASK_CHECK"     # в логе должно быть ***
+          echo "Длина значения: ${#MASK_CHECK}"   # длина не маскируется — секрет действительно передан
+
+      - name: Происхождение результатов T2
+        run: python research/t2/provenance.py check docs/t2/results
+
+      - name: Строгая сборка (предупреждения = ошибки)
+        run: sphinx-build -W --keep-going -b dirhtml docs site
+
+      - name: Орфография
+        run: python scripts/spellcheck.py site
+
+      - name: Внешние ссылки
+        run: sphinx-build -q -b linkcheck docs _build/linkcheck
+
+  build:
+    name: build (сайт под адрес GitVerse Pages)
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: ${{ vars.PAGES_URL }}
+      DEPLOY_TARGET: gitverse-pages
+      GITHUB_SHA: ${{ github.sha }}   # docs/conf.py берёт коммит для build-marker отсюда
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('requirements.txt') }}
+      - run: pip install --disable-pip-version-check --require-hashes -r requirements.txt
+      - run: sphinx-build -W --keep-going -b dirhtml docs site
+      - uses: gitverse/upload-pages-artifact@v1.0.0
+        with:
+          path: site
+
+  deploy:
+    name: deploy (GitVerse Pages)
+    needs: build
+    # Только основная ветка и только push или ручной запуск: PR, другие ветки и расписание — без деплоя
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: gitverse/deploy-pages@v1.0.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Проверка развёрнутого сайта
+        run: python scripts/check_site.py "${{ vars.PAGES_URL }}" --commit "${{ github.sha }}" --target gitverse-pages

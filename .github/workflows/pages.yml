@@ -21,6 +21,8 @@ env:
 jobs:
   # ---------- GitHub Pages ----------
   build-pages:
+    # GitVerse тоже читает .github/workflows/; там этот workflow не нужен (у GitVerse свой — .gitverse/)
+    if: github.server_url == 'https://github.com'
     runs-on: ubuntu-latest
     env:
       SITE_URL: https://crasavella04.github.io/python-lab3/
@@ -40,13 +42,15 @@ jobs:
       - name: Build site (strict)
         # -W: предупреждения = ошибки (аналог mkdocs --strict); dirhtml: адреса вида /t1/
         run: sphinx-build -W --keep-going -b dirhtml docs site
+      - name: Spelling
+        run: python scripts/spellcheck.py site
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: site
 
   deploy-pages:
     # В PR только проверяем сборку, публикуем лишь из main
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.server_url == 'https://github.com'
     needs: build-pages
     runs-on: ubuntu-latest
     permissions:
@@ -68,7 +72,7 @@ jobs:
   #   secret:    HELIOS_SSH_KEY (приватный ключ, публичный — в ~/.ssh/authorized_keys на Helios)
   # Пока переменные не заданы, job пропускается и не валит workflow.
   deploy-helios:
-    if: github.event_name != 'pull_request' && vars.HELIOS_USER != ''
+    if: github.event_name != 'pull_request' && vars.HELIOS_USER != '' && github.server_url == 'https://github.com'
     runs-on: ubuntu-latest
     environment:
       name: helios
