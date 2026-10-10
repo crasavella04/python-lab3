@@ -135,6 +135,15 @@ def main():
     OUT.mkdir(parents=True)
     for name in OUTPUTS:
         shutil.copy2(entry / name, OUT / name)
+    # График — под именем с ключом кэша: хостинг разрешает браузеру кэшировать файлы
+    # (GitHub Pages: max-age=600), и при неизменном имени после обновления данных читатель
+    # до 10 минут видел бы новую таблицу рядом со старым графиком. Новые данные → новый адрес.
+    figure = f"figure-{key[:12]}.svg"
+    shutil.copy2(entry / "figure.svg", OUT / figure)
+    # путь — от docs/: MyST разрешает картинки во вставке {include} относительно страницы, а не вставки
+    (OUT / "figure.md").write_text(
+        f"![Время отклика по режимам: распределение и среднее с 95 % доверительным интервалом](p3/generated/{figure})\n",
+        encoding="utf-8", newline="\n")
     seconds = round(time.perf_counter() - t0, 3)
     (OUT / "run.json").write_text(json.dumps(
         {"cache": status, "key": key, "seconds": seconds, "dataset_version": passport["version"]},

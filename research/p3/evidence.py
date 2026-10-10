@@ -49,14 +49,14 @@ def site_info():
             continue
         text = re.sub(r"<[^>]+>", " ", html)
         text = re.sub(r"\s+", " ", text)
-        version = re.search(r"Набор данных версия ([\d.]+), (\d+) измерений", text)
-        calc = re.search(r"Расчёт (.+?) с \(ключ кэша ([0-9a-f]+)\)", text)
+        version = re.search(r"Набор данных\s+версия\s+([\d.]+)\s*,\s*(\d+)\s+измерений", text)
+        calc = re.search(r"Расчёт\s+(.+?)\s+\(ключ кэша\s+([0-9a-f]+)", text)
         commit = re.search(r'build-marker" content="python-lab3:([0-9a-f]+|local)', html)
-        row_c = re.search(r"\| C \| .*?\|", text) or re.search(r"C (\d+) ([\d.]+) ([\d.]+) – ([\d.]+)", text)
-        print(f"  {name}: коммит {commit.group(1)[:7] if commit else '?'}, "
-              f"данные v{version.group(1) if version else '?'} ({version.group(2) if version else '?'} изм.), "
-              f"расчёт: {calc.group(1) + ' с, ключ ' + calc.group(2) if calc else '?'}, "
-              f"режим C: n={row_c.group(1)}, среднее {row_c.group(2)} мс" if row_c and row_c.lastindex else "")
+        row_c = re.search(r"\bC\s+(\d+)\s+([\d.]+)\s+([\d.]+)\s*–\s*([\d.]+)", text)
+        print(f"  {name}: коммит {commit.group(1)[:7] if commit else '?'}; "
+              f"данные v{version.group(1) if version else '?'} ({version.group(2) if version else '?'} изм.); "
+              f"расчёт: {calc.group(1) if calc else '?'}; "
+              f"режим C: n={row_c.group(1) if row_c else '?'}, среднее {row_c.group(2) if row_c else '?'} мс")
 
 
 if __name__ == "__main__":
