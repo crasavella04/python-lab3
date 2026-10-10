@@ -187,7 +187,7 @@ jobs:
         if: failure() && steps.health.outcome == 'failure'
         run: |
           echo "::error::Healthcheck не прошёл — возвращаю предыдущий релиз"
-          ssh helios "$HELIOS_DEPLOY rollback $TARGET" | tee "$RUNNER_TEMP/rollback.txt"
+          ssh helios "$HELIOS_DEPLOY rollback $TARGET failed" | tee "$RUNNER_TEMP/rollback.txt"
           commit=$(sed -n 's/.*commit=\([0-9a-f]*\).*/\1/p' "$RUNNER_TEMP/rollback.txt")
           python scripts/check_site.py "$SITE_URL" ${commit:+--commit "$commit"}
 

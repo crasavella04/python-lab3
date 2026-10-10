@@ -3,6 +3,8 @@
 #
 #   deploy   <цель> <коммит>    архив сайта (tar.gz) — из stdin
 #   rollback <цель> [<релиз>]   вернуть предыдущий релиз (или указанный)
+#   rollback <цель> failed      то же после проваленного healthcheck: снятая версия сохраняется
+#                               как <релиз>-failed (для разбора) и больше не выбирается для отката
 #   remove   preview/<имя>      удалить preview ветки вместе с её релизами
 #   list     [<цель>]           что сейчас опубликовано и какие релизы сохранены
 #
@@ -105,6 +107,7 @@ switch_to() {
     if [ -d "$LIVE" ]; then
         old=$(release_of "$LIVE")
         [ -n "$old" ] || old="00000000T000000Z-legacy"  # версия до P4, без release.json
+        old="$old${OUT_SUFFIX:-}"
         [ ! -e "$REL/$old" ] || old="$old-$$"
         # preview веток лежат внутри корня — переносим их в новую версию корня
         if [ "$SLOT" = root ] && [ -d "$LIVE/preview" ]; then
@@ -164,8 +167,12 @@ cmd_deploy() {
 }
 
 cmd_rollback() {
-    [ $# -ge 1 ] && [ $# -le 2 ] || die "rollback <цель> [<релиз>]"
+    [ $# -ge 1 ] && [ $# -le 2 ] || die "rollback <цель> [<релиз> | failed]"
     resolve "$1"
+    if [ "${2:-}" = failed ]; then
+        OUT_SUFFIX=-failed
+        set -- "$1"
+    fi
     lock
     [ -d "$REL" ] || die "для $1 нет сохранённых релизов"
     current=$(release_of "$LIVE")
@@ -179,12 +186,12 @@ cmd_rollback() {
         # (без awk -v: на старых Unix его нет) — сортируем вместе с текущим, берём строку перед ним
         pick=$({ ls -1 "$REL"; echo "$current"; } | sort | while read -r r; do
                    [ "$r" = "$current" ] && break
-                   echo "$r"
+                   case "$r" in *-failed*) ;; *) echo "$r" ;; esac
                done | tail -n 1)
     fi
     [ -n "$pick" ] && [ -d "$REL/$pick" ] || die "нет релиза для отката (текущий: ${current:-нет})"
     switch_to "$REL/$pick"
-    log "откат $1: $current → $pick"
+    log "откат $1: $current${OUT_SUFFIX:-} → $pick"
     echo "release=$pick commit=$(commit_of "$LIVE")"
 }
 
