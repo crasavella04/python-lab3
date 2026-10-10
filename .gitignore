@@ -37,3 +37,6 @@ research/t2/pipelines/out/
 research/t2/pipelines/mystnb/_build/
 research/t2/pipelines/mystnb/.jupyter_cache/
 research/t2/pipelines/mystnb/coverage.ipynb
+
+# Исследование T4: собранные варианты сайта для эксперимента с CDN
+research/t4/out/

@@ -1,0 +1,181 @@
+{
+  "local": {
+    "requests": 11,
+    "external_requests": 0,
+    "total_kb": 191.8,
+    "by_group_kb": {
+      "страница и тема": 65.1,
+      "формулы": 126.6
+    },
+    "rows": [
+      {
+        "resource": "about/index.html",
+        "group": "страница и тема",
+        "bytes": 6955,
+        "external": false
+      },
+      {
+        "resource": "assets/stylesheets/main.ec1eaa64.min.css",
+        "group": "страница и тема",
+        "bytes": 22817,
+        "external": false
+      },
+      {
+        "resource": "assets/stylesheets/palette.ab4e12ef.min.css",
+        "group": "страница и тема",
+        "bytes": 1875,
+        "external": false
+      },
+      {
+        "resource": "assets/javascripts/bundle.d7400e89.min.js",
+        "group": "страница и тема",
+        "bytes": 35048,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/katex.min.css",
+        "group": "формулы",
+        "bytes": 3527,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/katex.min.js",
+        "group": "формулы",
+        "bytes": 76247,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/auto-render.min.js",
+        "group": "формулы",
+        "bytes": 1565,
+        "external": false
+      },
+      {
+        "resource": "javascripts/katex-init.js",
+        "group": "формулы",
+        "bytes": 410,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/fonts/KaTeX_Main-Regular.woff2",
+        "group": "формулы",
+        "bytes": 26272,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/fonts/KaTeX_Math-Italic.woff2",
+        "group": "формулы",
+        "bytes": 16440,
+        "external": false
+      },
+      {
+        "resource": "assets/katex/fonts/KaTeX_Size2-Regular.woff2",
+        "group": "формулы",
+        "bytes": 5208,
+        "external": false
+      }
+    ]
+  },
+  "cdn": {
+    "requests": 15,
+    "external_requests": 11,
+    "total_kb": 538.5,
+    "by_group_kb": {
+      "страница и тема": 65.3,
+      "шрифт текста": 163.7,
+      "формулы": 309.5
+    },
+    "rows": [
+      {
+        "resource": "about/index.html",
+        "group": "страница и тема",
+        "bytes": 7106,
+        "external": false
+      },
+      {
+        "resource": "assets/stylesheets/main.ec1eaa64.min.css",
+        "group": "страница и тема",
+        "bytes": 22817,
+        "external": false
+      },
+      {
+        "resource": "assets/stylesheets/palette.ab4e12ef.min.css",
+        "group": "страница и тема",
+        "bytes": 1875,
+        "external": false
+      },
+      {
+        "resource": "assets/javascripts/bundle.d7400e89.min.js",
+        "group": "страница и тема",
+        "bytes": 35048,
+        "external": false
+      },
+      {
+        "resource": "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback",
+        "group": "шрифт текста",
+        "bytes": 2245,
+        "external": true
+      },
+      {
+        "resource": "https://fonts.gstatic.com/s/roboto/v51/KFO5CnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmkBnka.woff2",
+        "group": "шрифт текста",
+        "bytes": 47208,
+        "external": true
+      },
+      {
+        "resource": "https://fonts.gstatic.com/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3iUBGEe.woff2",
+        "group": "шрифт текста",
+        "bytes": 23664,
+        "external": true
+      },
+      {
+        "resource": "https://fonts.gstatic.com/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2",
+        "group": "шрифт текста",
+        "bytes": 43136,
+        "external": true
+      },
+      {
+        "resource": "https://fonts.gstatic.com/s/robotomono/v31/L0x5DF4xlVMF-BfR8bXMIjhPq3-OXg.woff2",
+        "group": "шрифт текста",
+        "bytes": 18592,
+        "external": true
+      },
+      {
+        "resource": "https://fonts.gstatic.com/s/robotomono/v31/L0x5DF4xlVMF-BfR8bXMIjhLq38.woff2",
+        "group": "шрифт текста",
+        "bytes": 32796,
+        "external": true
+      },
+      {
+        "resource": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+        "group": "формулы",
+        "bytes": 256540,
+        "external": true
+      },
+      {
+        "resource": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff",
+        "group": "формулы",
+        "bytes": 1368,
+        "external": true
+      },
+      {
+        "resource": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff",
+        "group": "формулы",
+        "bytes": 34160,
+        "external": true
+      },
+      {
+        "resource": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff",
+        "group": "формулы",
+        "bytes": 19360,
+        "external": true
+      },
+      {
+        "resource": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff",
+        "group": "формулы",
+        "bytes": 5464,
+        "external": true
+      }
+    ]
+  }
+}
