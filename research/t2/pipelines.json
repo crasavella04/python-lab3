@@ -1,0 +1,50 @@
+{
+  "A_manual": {
+    "seconds": 8.58,
+    "output_kb": 56.0,
+    "files": 1
+  },
+  "B_nbconvert": {
+    "seconds_html": 17.33,
+    "seconds_md": 15.7,
+    "html_kb": 334.1,
+    "md_kb": 38.6,
+    "md_files": 2
+  },
+  "C_mystnb": {
+    "seconds_cold": 26.09,
+    "seconds_cached": 9.25,
+    "seconds_after_param_change": 26.17,
+    "cache_kb": 133.7,
+    "site_kb": 285.0
+  },
+  "D_papermill": {
+    "runs": {
+      "2000": {
+        "seconds": 18.07,
+        "ipynb_kb": 58.6
+      },
+      "20000": {
+        "seconds": 15.71,
+        "ipynb_kb": 57.0
+      },
+      "200000": {
+        "seconds": 20.92,
+        "ipynb_kb": 56.4
+      }
+    }
+  },
+  "E_script": {
+    "seconds_direct": 8.81,
+    "seconds_nox_first": 11.25,
+    "seconds_nox_reuse": 8.95,
+    "output_kb": 48.8,
+    "files": [
+      "coverage.csv",
+      "coverage.md",
+      "coverage.svg",
+      "manifest.json",
+      "provenance.md"
+    ]
+  }
+}

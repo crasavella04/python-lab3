@@ -29,3 +29,11 @@ Thumbs.db
 research/t1/.venvs/
 research/t1/sites/
 research/t1/viz/
+
+# Исследование T2: окружения, промежуточные результаты конвейеров, кэш исполнения ноутбуков
+research/t2/.venv/
+research/t2/.nox/
+research/t2/pipelines/out/
+research/t2/pipelines/mystnb/_build/
+research/t2/pipelines/mystnb/.jupyter_cache/
+research/t2/pipelines/mystnb/coverage.ipynb
