@@ -25,11 +25,11 @@ PAGES = ["", "t1/", "t2/", "t3/", "t4/", "t5/", "practice/", "about/", "debuggin
 # Старые адреса, которые должны продолжать работать (страница перенесена → переадресация)
 REDIRECTS = {"theory/": "../t1/"}
 ASSETS = [
-    "assets/katex/katex.min.js",
-    "assets/katex/auto-render.min.js",
-    "assets/katex/katex.min.css",
-    "assets/katex/fonts/KaTeX_Main-Regular.woff2",
-    "javascripts/katex-init.js",
+    "_static/katex/katex.min.js",
+    "_static/katex/auto-render.min.js",
+    "_static/katex/katex.min.css",
+    "_static/katex/fonts/KaTeX_Main-Regular.woff2",
+    "_static/katex-init.js",
 ]
 
 failures = []
@@ -93,21 +93,30 @@ def main():
     check("Результаты исследований" in html[""], "заголовок сайта на главной")
 
     print("[3] Поиск")
-    status, body = fetch(base + "search/search_index.json")
-    check(status == 200, f"{status} search/search_index.json")
+    # Sphinx: searchindex.js = Search.setIndex({...}); страница "t2/" — документ "t2/index"
+    status, body = fetch(base + "searchindex.js")
+    check(status == 200, f"{status} searchindex.js")
     try:
-        locations = {d["location"].split("#")[0] for d in json.loads(body)["docs"]}
-        missing = [p for p in PAGES if p not in locations]
-        check(not missing, f"в индексе {len(locations)} страниц, пропущены: {missing or 'нет'}")
+        text = body.decode("utf-8")
+        index = json.loads(text[text.index("(") + 1:text.rindex(")")])
+        docnames = set(index["docnames"])
+        expected = {(p.rstrip("/") or "index") for p in PAGES}
+        expected = {d if d in docnames else d + "/index" for d in expected}
+        missing = sorted(expected - docnames)
+        check(not missing, f"в индексе {len(docnames)} документов, пропущены: {missing or 'нет'}")
+        check(len(index.get("terms", {})) > 1000, f"в индексе {len(index.get('terms', {}))} терминов")
     except (ValueError, KeyError) as e:
         check(False, f"индекс поиска не разобран: {e}")
-    check("search" in html[""] and "data-md-component=\"search\"" in html[""], "форма поиска на странице")
+    check('action="' in html[""] and "search" in html[""], "форма поиска на странице")
 
     print("[4] Формулы и внешние CDN")
     for asset in ASSETS:
         status, _ = fetch(base + asset)
         check(status == 200, f"{status} {asset}")
-    check('class="arithmatex"' in html["about/"], "формулы размечены на странице about/")
+    check('class="math' in html["about/"], "формулы размечены на странице about/")
+    # Регрессия из «Отладки»: с "\(" вместо "\\(" в JS KaTeX ищет формулы между обычными скобками
+    _, init_js = fetch(base + "_static/katex-init.js")
+    check(b'"\\\\("' in init_js and b'"\\\\["' in init_js, "katex-init.js: разделители \\( и \\[ записаны верно")
     external = set()
     for page, text in html.items():
         for tag in re.findall(r"<(?:script|link)\b[^>]*>", text):

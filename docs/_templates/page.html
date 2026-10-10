@@ -1,0 +1,26 @@
+{% extends "!page.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {#- Контрольная строка: по ней проверяется, что на хостинг выкачена нужная сборка -#}
+  <meta name="build-marker" content="python-lab3:{{ build.commit }}:{{ build.target }}">
+  {% include "metadata.html" %}
+{% endblock %}
+
+{% block footer %}
+  {{ super() }}
+  {#- Версия сборки: по ссылке — код и данные ровно того коммита, из которого собрана страница -#}
+  <div class="bottom-of-page build-info">
+    <div class="left-details">
+      Тексты — <a href="{{ citation.license.text }}">CC BY 4.0</a>,
+      код — <a href="{{ citation.repository }}/blob/main/LICENSE">MIT</a>,
+      данные — <a href="{{ citation.license.data }}">CC0</a>.
+      {%- if build.commit and build.commit != "local" %}
+      Сборка <a href="{{ citation.repository }}/tree/{{ build.commit }}">{{ build.commit[:7] }}</a>.
+      {%- endif %}
+      {%- if citation.doi %}
+      DOI <a href="https://doi.org/{{ citation.doi }}">{{ citation.doi }}</a>.
+      {%- endif %}
+    </div>
+  </div>
+{% endblock %}

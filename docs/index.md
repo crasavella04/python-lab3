@@ -1,8 +1,8 @@
 # Результаты исследований
 
 Сайт с отчётами по заданиям курса РРиИД Python. Он собирается генератором статических сайтов
-[MkDocs](https://www.mkdocs.org/) с темой [Material](https://squidfunk.github.io/mkdocs-material/),
-а публикуется автоматически через GitHub Actions.
+[Sphinx](https://www.sphinx-doc.org/) с [MyST-Parser](https://myst-parser.readthedocs.io/) —
+этот генератор признан оптимальным в [T1](t1.md) — и публикуется автоматически через CI/CD.
 
 ## Содержание
 
@@ -11,7 +11,34 @@
 - [T3. Отечественные CI/CD и хостинги](t3.md): GitVerse, SourceCraft, GitFlic, Helios, Object Storage и перенос workflow.
 - [T4. Доставка и безопасность](t4.md): учётные данные способов деплоя, защита CI, сайт без CDN.
 - [T5. Публикуемость и цитируемость](t5.md): постоянные ссылки, DOI и ORCID, метаданные для Google Scholar, FAIR.
-- [Практическое задание](practice.md): отчёт по выполнению практического задания.
+- [P1. CI/CD на GitVerse](practice.md): пайплайн публикации сайта на отечественном сервисе.
 - [О сайте](about.md): как устроены сборка и развёртывание.
 - [Отладка](debugging.md): возникшие ошибки и способы их устранения.
-- [Лицензии](license.md): CC BY 4.0 на тексты, MIT на код.
+- [Лицензии](license.md): CC BY 4.0 на тексты, MIT на код, CC0 на данные.
+
+```{toctree}
+:caption: Исследования
+:hidden:
+
+T1. Сравнение генераторов <t1>
+T2. Конвейер вычислений <t2/index>
+T3. Отечественные CI/CD и хостинги <t3>
+T4. Доставка и безопасность <t4>
+T5. Публикуемость и цитируемость <t5>
+```
+
+```{toctree}
+:caption: Практика
+:hidden:
+
+P1. CI/CD на GitVerse <practice>
+```
+
+```{toctree}
+:caption: О проекте
+:hidden:
+
+О сайте <about>
+Отладка <debugging>
+Лицензии <license>
+```

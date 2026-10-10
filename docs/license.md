@@ -6,9 +6,9 @@
 | Что | Лицензия | Файл в репозитории |
 |-----|----------|--------------------|
 | Тексты отчётов и иллюстрации (`docs/**/*.md`, рисунки) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ru) | `LICENSE-CONTENT` |
-| Код: конфигурация сайта, workflow, скрипты, шаблоны (`mkdocs.yml`, `.github/`, `scripts/`, `overrides/`, `docs/javascripts/`) | [MIT](https://opensource.org/license/mit) | `LICENSE` |
+| Код: конфигурация сайта, workflow, скрипты, шаблоны (`docs/conf.py`, `docs/_templates/`, `.github/`, `scripts/`, `research/`) | [MIT](https://opensource.org/license/mit) | `LICENSE` |
 | Данные: датасет и результаты T2 (`research/t2/data/*.csv`, `docs/t2/results/*.csv`, `manifest.json`) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.ru) — без условий | `research/t2/data/DATASET.json` (поле `license`) |
-| Сторонний код: KaTeX (`docs/assets/katex/`) | MIT, © Khan Academy and other contributors | `docs/assets/katex/LICENSE` |
+| Сторонний код: KaTeX (`docs/_static/katex/`) | MIT, © Khan Academy and other contributors | `docs/_static/katex/LICENSE` |
 
 ## Почему так
 
