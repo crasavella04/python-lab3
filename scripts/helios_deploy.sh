@@ -28,7 +28,7 @@ BASE="$HOME/.deploy/python-lab3"
 KEEP=3                # сколько предыдущих релизов хранить на каждый слот
 MAX_KB=102400         # 100 МБ распакованного архива — защита квоты
 
-log() { printf 'deploy: %s\n' "$*" >&2; }
+log() { printf 'deploy: %s\n' "$*" >&2 || true; }   # stderr может вести в оборванное соединение
 die() { printf 'deploy: ОШИБКА: %s\n' "$*" >&2; exit 1; }
 
 STAGE=""
@@ -39,7 +39,12 @@ cleanup() {
 }
 on_signal() { log "прервано сигналом — рабочая версия не тронута"; exit 130; }
 trap cleanup EXIT
-trap on_signal HUP INT TERM PIPE
+trap on_signal HUP INT TERM
+# SIGPIPE игнорируем. Когда соединение рвётся, stderr ведёт в закрытый сокет: с обработчиком
+# по умолчанию первая же запись (сообщение tar или наше) убивает процесс раньше, чем cleanup
+# успевает удалить stage. Так и было в демонстрации P4 — остатки убирала следующая выкладка.
+# С игнорированием запись просто возвращает ошибку, и скрипт штатно доходит до cleanup.
+trap '' PIPE
 
 # --- цель → пути -------------------------------------------------------------
 resolve() {
@@ -102,7 +107,7 @@ clean_stale_stage() {
 switch_to() {
     new=$1
     # Между двумя mv сайта нет — сигналы на это время игнорируем, чтобы не застрять посередине
-    trap '' HUP INT TERM PIPE
+    trap '' HUP INT TERM
     mkdir -p "$REL"
     if [ -d "$LIVE" ]; then
         old=$(release_of "$LIVE")
@@ -117,7 +122,7 @@ switch_to() {
     fi
     mkdir -p "${LIVE%/*}"
     mv "$new" "$LIVE"
-    trap on_signal HUP INT TERM PIPE
+    trap on_signal HUP INT TERM
 }
 
 prune() {
