@@ -1,0 +1,31 @@
+{
+  "sphinx": {
+    "cold_s": 7.11,
+    "runs": [
+      6.09,
+      7.54,
+      7.11
+    ],
+    "warnings": []
+  },
+  "mkdocs": {
+    "cold_s": 2.38,
+    "runs": [
+      2.38,
+      2.15,
+      2.53
+    ],
+    "warnings": [
+      " │  ⚠  Warning from the Material for MkDocs team"
+    ]
+  },
+  "jupyterbook": {
+    "cold_s": 52.64,
+    "runs": [
+      51.39,
+      53.75,
+      52.64
+    ],
+    "warnings": []
+  }
+}

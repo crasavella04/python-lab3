@@ -1,0 +1,233 @@
+{
+  "jupyterbook": {
+    "desktop": {
+      "scores": {
+        "performance": 48,
+        "accessibility": 96,
+        "best-practices": 81,
+        "seo": 92,
+        "agentic-browsing": 100
+      },
+      "total_kb": 3480,
+      "noise_kb": 299,
+      "requests": 36,
+      "external_requests": 6,
+      "external_kb": 1493,
+      "external_hosts": [
+        "cdn.jsdelivr.net",
+        "cdn.plot.ly",
+        "cdnjs.cloudflare.com"
+      ],
+      "fcp_s": 2.1,
+      "lcp_s": 2.22,
+      "tbt_ms": 1075,
+      "cls": 0.0,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "frame-title",
+        "label-content-name-mismatch"
+      ],
+      "failed_bp": [
+        "is-on-https",
+        "valid-source-maps"
+      ],
+      "screenshot": "jupyterbook-desktop.jpg"
+    },
+    "mobile": {
+      "scores": {
+        "performance": 17,
+        "accessibility": 92,
+        "best-practices": 81,
+        "seo": 92,
+        "agentic-browsing": 34
+      },
+      "total_kb": 3480,
+      "noise_kb": 299,
+      "requests": 36,
+      "external_requests": 6,
+      "external_kb": 1493,
+      "external_hosts": [
+        "cdn.jsdelivr.net",
+        "cdn.plot.ly",
+        "cdnjs.cloudflare.com"
+      ],
+      "fcp_s": 11.81,
+      "lcp_s": 12.26,
+      "tbt_ms": 4727,
+      "cls": 0.176,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "button-name",
+        "frame-title",
+        "label-content-name-mismatch"
+      ],
+      "failed_bp": [
+        "is-on-https",
+        "valid-source-maps"
+      ],
+      "screenshot": "jupyterbook-mobile.jpg",
+      "fullpage": "jupyterbook-mobile-full.jpg",
+      "fullpage_size": [
+        360,
+        3023
+      ]
+    }
+  },
+  "mkdocs": {
+    "desktop": {
+      "scores": {
+        "performance": 70,
+        "accessibility": 87,
+        "best-practices": 81,
+        "seo": 91,
+        "agentic-browsing": 50
+      },
+      "total_kb": 2097,
+      "noise_kb": 150,
+      "requests": 26,
+      "external_requests": 16,
+      "external_kb": 1947,
+      "external_hosts": [
+        "cdn.plot.ly",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com",
+        "unpkg.com"
+      ],
+      "fcp_s": 0.61,
+      "lcp_s": 0.79,
+      "tbt_ms": 1197,
+      "cls": 0.009,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "aria-dialog-name",
+        "color-contrast",
+        "link-in-text-block",
+        "table-fake-caption",
+        "target-size"
+      ],
+      "failed_bp": [
+        "is-on-https"
+      ],
+      "screenshot": "mkdocs-desktop.jpg"
+    },
+    "mobile": {
+      "scores": {
+        "performance": 31,
+        "accessibility": 87,
+        "best-practices": 81,
+        "seo": 91,
+        "agentic-browsing": 45
+      },
+      "total_kb": 2097,
+      "noise_kb": 150,
+      "requests": 26,
+      "external_requests": 16,
+      "external_kb": 1947,
+      "external_hosts": [
+        "cdn.plot.ly",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com",
+        "unpkg.com"
+      ],
+      "fcp_s": 3.44,
+      "lcp_s": 16.68,
+      "tbt_ms": 5348,
+      "cls": 0.1,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "aria-dialog-name",
+        "color-contrast",
+        "link-in-text-block",
+        "table-fake-caption",
+        "target-size"
+      ],
+      "failed_bp": [
+        "is-on-https"
+      ],
+      "screenshot": "mkdocs-mobile.jpg",
+      "fullpage": "mkdocs-mobile-full.jpg",
+      "fullpage_size": [
+        360,
+        2745
+      ]
+    }
+  },
+  "sphinx": {
+    "desktop": {
+      "scores": {
+        "performance": 61,
+        "accessibility": 92,
+        "best-practices": 77,
+        "seo": 91,
+        "agentic-browsing": 32
+      },
+      "total_kb": 2125,
+      "noise_kb": 150,
+      "requests": 21,
+      "external_requests": 8,
+      "external_kb": 2006,
+      "external_hosts": [
+        "cdn.jsdelivr.net",
+        "cdn.plot.ly"
+      ],
+      "fcp_s": 0.53,
+      "lcp_s": 0.62,
+      "tbt_ms": 1315,
+      "cls": 0.197,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "aria-deprecated-role",
+        "aria-required-children",
+        "target-size"
+      ],
+      "failed_bp": [
+        "is-on-https",
+        "errors-in-console"
+      ],
+      "screenshot": "sphinx-desktop.jpg"
+    },
+    "mobile": {
+      "scores": {
+        "performance": 57,
+        "accessibility": 95,
+        "best-practices": 77,
+        "seo": 91,
+        "agentic-browsing": 41
+      },
+      "total_kb": 2127,
+      "noise_kb": 151,
+      "requests": 21,
+      "external_requests": 8,
+      "external_kb": 2008,
+      "external_hosts": [
+        "cdn.jsdelivr.net",
+        "cdn.plot.ly"
+      ],
+      "fcp_s": 2.26,
+      "lcp_s": 2.87,
+      "tbt_ms": 5008,
+      "cls": 0.129,
+      "meta_viewport_ok": true,
+      "viewport_insight_ok": true,
+      "failed_a11y": [
+        "aria-deprecated-role",
+        "aria-required-children"
+      ],
+      "failed_bp": [
+        "is-on-https",
+        "errors-in-console"
+      ],
+      "screenshot": "sphinx-mobile.jpg",
+      "fullpage": "sphinx-mobile-full.jpg",
+      "fullpage_size": [
+        360,
+        2686
+      ]
+    }
+  }
+}
