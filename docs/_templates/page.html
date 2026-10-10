@@ -4,6 +4,9 @@
   {{ super() }}
   {#- Контрольная строка: по ней проверяется, что на хостинг выкачена нужная сборка -#}
   <meta name="build-marker" content="python-lab3:{{ build.commit }}:{{ build.target }}">
+  {%- if build.preview %}
+  <meta name="robots" content="noindex, nofollow">
+  {%- endif %}
   {% include "metadata.html" %}
 {% endblock %}
 

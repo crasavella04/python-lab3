@@ -1,0 +1,63 @@
+name: Helios SSH
+description: >
+  Ключ деплоя и проверенный ключ хоста для `ssh helios`; без forced command — ещё и
+  доставка scripts/helios_deploy.sh на сервер. Общая часть для выкладки, отката и удаления preview.
+
+inputs:
+  key:
+    description: приватный ключ деплоя (секрет HELIOS_SSH_KEY)
+    required: true
+  host:
+    required: true
+  port:
+    required: true
+  user:
+    required: true
+  forced-command:
+    description: >
+      'true', если на Helios ключ ограничен forced command (research/t4): скрипт уже установлен
+      там, а любая присланная команда всё равно выполняет только его
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Configure SSH
+      shell: bash
+      env:
+        SSH_KEY: ${{ inputs.key }}
+        H_HOST: ${{ inputs.host }}
+        H_PORT: ${{ inputs.port }}
+        H_USER: ${{ inputs.user }}
+      run: |
+        install -m 700 -d ~/.ssh
+        printf '%s\n' "$SSH_KEY" > ~/.ssh/helios
+        chmod 600 ~/.ssh/helios
+        # Ключ хоста — из репозитория, а не из ssh-keyscan: keyscan доверяет любому ответившему серверу
+        cp "$GITHUB_WORKSPACE/.github/known_hosts" ~/.ssh/known_hosts_helios
+        cat >> ~/.ssh/config <<EOF
+        Host helios
+          HostName $H_HOST
+          Port $H_PORT
+          User $H_USER
+          IdentityFile ~/.ssh/helios
+          IdentitiesOnly yes
+          UserKnownHostsFile ~/.ssh/known_hosts_helios
+          StrictHostKeyChecking yes
+          ServerAliveInterval 5
+          ServerAliveCountMax 3
+        EOF
+
+    - name: Install deploy script on Helios
+      if: inputs.forced-command != 'true'
+      shell: bash
+      run: |
+        ssh helios 'mkdir -p .deploy/python-lab3/bin && cat > .deploy/python-lab3/bin/deploy.sh.new &&
+                    mv .deploy/python-lab3/bin/deploy.sh.new .deploy/python-lab3/bin/deploy.sh' \
+          < "$GITHUB_WORKSPACE/scripts/helios_deploy.sh"
+        echo "HELIOS_DEPLOY=sh .deploy/python-lab3/bin/deploy.sh" >> "$GITHUB_ENV"
+
+    - name: Forced command
+      if: inputs.forced-command == 'true'
+      shell: bash
+      run: echo "HELIOS_DEPLOY=deploy-python-lab3" >> "$GITHUB_ENV"

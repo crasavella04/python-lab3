@@ -55,6 +55,11 @@ myst_substitutions = {
 
 # -- HTML --------------------------------------------------------------------
 html_theme = "furo"
+html_theme_options = {}
+if os.environ.get("SITE_PREVIEW"):
+    html_theme_options["announcement"] = (
+        f"Предварительная версия ветки <code>{os.environ['SITE_PREVIEW']}</code>. "
+        "Опубликованный сайт — в <a href=\"" + html_baseurl.split("/preview/")[0] + "/\">корне</a>.")
 html_title = project
 html_static_path = ["_static"]
 html_extra_path = ["_extra"]          # файлы как есть: переадресация /theory/ → /t1/
@@ -82,6 +87,8 @@ html_context = {
     "build": {
         "commit": os.environ.get("GITHUB_SHA", "local"),
         "target": os.environ.get("DEPLOY_TARGET", "local"),
+        # P4: сборка для preview ветки — не индексируется поисковиками, сверху плашка
+        "preview": os.environ.get("SITE_PREVIEW", ""),
     },
     "citation": {
         "authors": [{"name": "crasavella04", "orcid": ""}],   # заменить на ФИО и ORCID
