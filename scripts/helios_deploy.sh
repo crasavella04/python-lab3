@@ -151,7 +151,9 @@ cmd_deploy() {
     tar -xzf - -C "$STAGE" || die "архив принят не целиком (обрыв передачи?) — рабочая версия не тронута"
 
     if find "$STAGE" -type l | grep -q .; then die "в архиве есть символические ссылки"; fi
-    kb=$(du -sk "$STAGE" | cut -f1)
+    # Сумма размеров файлов, а не du: на Helios du сразу после записи показывал 66 КБ
+    # вместо ~4 МБ — место на диске выделяется позже, и лимит по du ничего бы не ограничивал
+    kb=$(find "$STAGE" -type f -exec ls -ln {} + | awk '{ s += $5 } END { print int(s / 1024) }')
     [ "$kb" -le "$MAX_KB" ] || die "архив больше лимита: $kb КБ"
     [ -f "$STAGE/index.html" ] || die "в архиве нет index.html"
     [ ! -e "$STAGE/preview" ] || die "в архиве есть каталог preview/ — он занят preview веток"
@@ -160,7 +162,7 @@ cmd_deploy() {
     printf '{"release": "%s", "target": "%s", "commit": "%s", "deployed_at": "%s"}\n' \
         "$id" "$1" "$commit" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$STAGE/release.json"
     chmod -R a+rX "$STAGE"
-    log "принято и распаковано $kb КБ"
+    log "принято и распаковано $kb КБ (du: $(du -sk "$STAGE" | cut -f1) КБ)"
 
     lock
     clean_stale_stage
