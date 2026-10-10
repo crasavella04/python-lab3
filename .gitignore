@@ -24,3 +24,8 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Исследование T1: окружения генераторов, собранные тестовые сайты, HTML графиков
+research/t1/.venvs/
+research/t1/sites/
+research/t1/viz/

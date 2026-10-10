@@ -1,0 +1,74 @@
+{
+  "mkdocs": {
+    "cold_s": 1.86,
+    "incremental_s": 2.02,
+    "files": 152,
+    "size_kb": 8649,
+    "runs": {
+      "cold": [
+        1.78,
+        1.95,
+        1.86
+      ],
+      "incremental": [
+        2.04,
+        2.02,
+        1.95
+      ]
+    }
+  },
+  "sphinx": {
+    "cold_s": 10.76,
+    "incremental_s": 4.33,
+    "files": 340,
+    "size_kb": 5671,
+    "runs": {
+      "cold": [
+        11.85,
+        10.76,
+        10.34
+      ],
+      "incremental": [
+        4.8,
+        4.2,
+        4.33
+      ]
+    }
+  },
+  "pelican": {
+    "cold_s": 2.28,
+    "incremental_s": 2.05,
+    "files": 125,
+    "size_kb": 2884,
+    "runs": {
+      "cold": [
+        2.34,
+        2.21,
+        2.28
+      ],
+      "incremental": [
+        2.03,
+        2.1,
+        2.05
+      ]
+    }
+  },
+  "jupyterbook": {
+    "cold_s": 50.35,
+    "incremental_s": 49.7,
+    "files": 1570,
+    "size_kb": 35647,
+    "runs": {
+      "cold": [
+        52.59,
+        50.35,
+        44.3
+      ],
+      "incremental": [
+        49.7,
+        46.96,
+        51.9
+      ]
+    }
+  }
+}

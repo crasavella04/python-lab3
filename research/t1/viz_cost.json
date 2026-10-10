@@ -1,0 +1,26 @@
+{
+  "plotly_cdn": {
+    "kb": 34.4,
+    "gzip_kb": 18.5
+  },
+  "plotly_inline": {
+    "kb": 4740.7,
+    "gzip_kb": 1453.7
+  },
+  "bokeh_cdn": {
+    "kb": 26.4,
+    "gzip_kb": 17.4
+  },
+  "bokeh_inline": {
+    "kb": 1383.0,
+    "gzip_kb": 394.2
+  },
+  "altair_cdn": {
+    "kb": 53.8,
+    "gzip_kb": 21.1
+  },
+  "altair_inline": {
+    "kb": 929.8,
+    "gzip_kb": 318.4
+  }
+}
