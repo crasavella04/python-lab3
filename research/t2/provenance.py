@@ -66,7 +66,7 @@ def check(results_dir: Path) -> int:
     if data["sha256_actual"] != data["sha256"]:
         problems.append(f"файл данных не совпадает с паспортом {DATASET_PASSPORT} "
                         f"(данные изменили без новой версии датасета)")
-    if manifest["data"]["sha256"] != data["sha256_actual"]:
+    elif manifest["data"]["sha256"] != data["sha256_actual"]:
         problems.append(f"результаты посчитаны на другой версии данных: "
                         f"{manifest['data']['version']} → {data['version']}")
 

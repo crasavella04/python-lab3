@@ -32,6 +32,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - run: pip install -r requirements.txt
+      - name: Check T2 results provenance
+        # Результаты T2 считаются вне CI; здесь только проверяем, что они соответствуют коду и данным
+        run: python research/t2/provenance.py check docs/t2/results
       - name: Build site (strict)
         run: mkdocs build --strict
       - uses: actions/upload-pages-artifact@v4
@@ -78,6 +81,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
       - run: pip install -r requirements.txt
+      - name: Check T2 results provenance
+        # Результаты T2 считаются вне CI; здесь только проверяем, что они соответствуют коду и данным
+        run: python research/t2/provenance.py check docs/t2/results
       - name: Build site (strict)
         run: mkdocs build --strict
 

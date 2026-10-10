@@ -13,6 +13,9 @@ site_dir: site
 # Ссылки вида about/ вместо about.html; MkDocs делает их относительными,
 # поэтому сайт работает в любом подкаталоге (/python-lab3/, /~login/...)
 use_directory_urls: true
+# Сгенерированные фрагменты T2 вставляются в страницу через snippets, отдельными страницами не собираются
+exclude_docs: |
+  t2/results/*.md
 
 theme:
   name: material
@@ -42,7 +45,9 @@ theme:
 
 nav:
   - Главная: index.md
-  - Теоретическое задание: theory.md
+  - Исследования:
+      - T1. Сравнение генераторов: theory.md
+      - T2. Конвейер вычислений: t2/index.md
   - Практическое задание: practice.md
   - О сайте: about.md
   - Отладка: debugging.md
@@ -60,6 +65,9 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: [docs]
+      check_paths: true
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.arithmatex:

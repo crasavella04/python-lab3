@@ -1,0 +1,58 @@
+{
+  "experiment": "t-interval coverage",
+  "git": {
+    "commit": "9ef3dad6272d9a36aad84ab66d51c0c4629d122b",
+    "dirty": false
+  },
+  "code": {
+    "files": {
+      "experiment/coverage.py": "d6b507665d0307b2a93657522755ce3066c31d04acdeccb3d4c43875d7692b99",
+      "generate.py": "b73fc574edac886a81a2ee4e443f0614df1b474281e547006b4a2a4b9cdc32ae"
+    },
+    "sha256": "47f0626c60876e4d169e2b34b53e2c697f69579451d1ee79003c1ec0bc2c1fe5"
+  },
+  "data": {
+    "file": "data/measurements.csv",
+    "version": "1.0",
+    "sha256": "b8b6a1873a517976c2d017032c87bbff6e35937350eff6492b79139a9a28c020",
+    "rows": 500,
+    "source": "синтетика: gamma(2, 3) + N(0, 0.3), seed 1 (data/make_dataset.py)"
+  },
+  "params": {
+    "sizes": [
+      5,
+      10,
+      20,
+      50,
+      100
+    ],
+    "dists": [
+      "normal",
+      "exponential",
+      "lognormal",
+      "empirical"
+    ],
+    "n_sim": 20000,
+    "alpha": 0.05,
+    "seed": 2026
+  },
+  "params_sha256": "4099d4063a7c626e62b0252bc6d74ccd616b964061e1d1a81b5a348ad6b1a476",
+  "env": {
+    "python": "3.13.15",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2"
+  },
+  "run": {
+    "started_utc": "2026-10-10T14:49:42+00:00",
+    "finished_utc": "2026-10-10T14:49:45+00:00",
+    "compute_seconds": 0.51
+  },
+  "outputs": {
+    "coverage.csv": "1a7bf3499c76d6845aadd5352e67bc273e0155cf21bd39afa0d14acbf7a9c545",
+    "coverage.md": "59281441e5b96c8bf6b5ebececf23dd694635f99beb504099ca14ca91478a71c",
+    "coverage.svg": "6f496738d910e117b23c06b576be9f50034ac6d8659df074bc997985a6bf3f43"
+  }
+}
