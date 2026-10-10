@@ -210,6 +210,10 @@ cmd_list() {
         echo "$t: рабочая версия $(release_of "$LIVE" || true)"
         ls -1 "$REL" 2>/dev/null | sort -r | sed 's/^/    сохранён /'
     done
+    for d in "$BASE"/stage/*; do
+        [ -d "$d" ] && echo "незавершённая выкладка: stage/${d##*/}"
+    done
+    return 0
 }
 
 # --- разбор команды -----------------------------------------------------------------

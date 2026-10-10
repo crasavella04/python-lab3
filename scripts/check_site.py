@@ -14,6 +14,7 @@
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -39,6 +40,9 @@ def check(ok, message):
     print(("  OK   " if ok else "  FAIL ") + message)
     if not ok:
         failures.append(message)
+        if os.environ.get("GITHUB_ACTIONS"):
+            # Аннотация видна на странице запуска (и в API) без чтения всего лога
+            print(f"::error title=check_site::{message}")
 
 
 def fetch(url, retries=3):

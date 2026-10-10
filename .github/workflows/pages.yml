@@ -166,17 +166,24 @@ jobs:
           tar -C site -czf "$RUNNER_TEMP/site.tgz" .
           size=$(stat -c %s "$RUNNER_TEMP/site.tgz")
           echo "Архив: $((size / 1024)) КБ"
+          # Вывод скрипта на сервере — ещё и аннотацией: её видно на странице запуска без лога
+          log="$RUNNER_TEMP/deploy.log"
+          annotate() { echo "::$1 title=$2::$(awk 'BEGIN { ORS = "%0A" } { gsub(/%/, "%25"); print }' "$log")"; }
           start=$(date +%s%N)
+          rc=0
           if [ "${FAULT:-}" = interrupt ]; then
             # Половина архива, затем ssh-клиент убит — как при потере сети или отмене job
             { head -c $((size / 2)) "$RUNNER_TEMP/site.tgz"; sleep 30; } |
-              timeout 10 ssh helios "$HELIOS_DEPLOY deploy $TARGET $GITHUB_SHA"
+              timeout 10 ssh helios "$HELIOS_DEPLOY deploy $TARGET $GITHUB_SHA" > "$log" 2>&1 || rc=$?
           else
-            ssh helios "$HELIOS_DEPLOY deploy $TARGET $GITHUB_SHA" < "$RUNNER_TEMP/site.tgz"
+            ssh helios "$HELIOS_DEPLOY deploy $TARGET $GITHUB_SHA" < "$RUNNER_TEMP/site.tgz" > "$log" 2>&1 || rc=$?
           fi
           ms=$(( ($(date +%s%N) - start) / 1000000 ))
-          echo "Передача, распаковка и переключение: $ms мс"
-          echo "Выкладка на Helios ($TARGET): $ms мс, архив $((size / 1024)) КБ" >> "$GITHUB_STEP_SUMMARY"
+          echo "код $rc, $ms мс, архив $((size / 1024)) КБ" >> "$log"
+          cat "$log"
+          echo "Выкладка на Helios ($TARGET): код $rc, $ms мс, архив $((size / 1024)) КБ" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$rc" = 0 ]; then annotate notice "Выкладка $TARGET"; else annotate error "Выкладка $TARGET не удалась"; fi
+          exit "$rc"
 
       - name: Healthcheck
         id: health
@@ -187,7 +194,9 @@ jobs:
         if: failure() && steps.health.outcome == 'failure'
         run: |
           echo "::error::Healthcheck не прошёл — возвращаю предыдущий релиз"
-          ssh helios "$HELIOS_DEPLOY rollback $TARGET failed" | tee "$RUNNER_TEMP/rollback.txt"
+          ssh helios "$HELIOS_DEPLOY rollback $TARGET failed" > "$RUNNER_TEMP/rollback.txt" 2>&1
+          cat "$RUNNER_TEMP/rollback.txt"
+          echo "::warning title=Автооткат $TARGET::$(awk 'BEGIN { ORS = "%0A" } { print }' "$RUNNER_TEMP/rollback.txt")"
           commit=$(sed -n 's/.*commit=\([0-9a-f]*\).*/\1/p' "$RUNNER_TEMP/rollback.txt")
           python scripts/check_site.py "$SITE_URL" ${commit:+--commit "$commit"}
 
@@ -198,4 +207,6 @@ jobs:
 
       - name: Releases on Helios
         if: always() && steps.ssh.outcome == 'success'
-        run: ssh helios "$HELIOS_DEPLOY list $TARGET"
+        run: |
+          ssh helios "$HELIOS_DEPLOY list $TARGET" | tee "$RUNNER_TEMP/list.txt"
+          echo "::notice title=Релизы на Helios::$(awk 'BEGIN { ORS = "%0A" } { print }' "$RUNNER_TEMP/list.txt")"
