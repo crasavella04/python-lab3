@@ -1,0 +1,82 @@
+# Перенос .github/workflows/pages.yml на GitVerse: сборка MkDocs → GitVerse Pages и Helios.
+# Положить в .gitverse/workflows/pages.yml репозитория на GitVerse.
+# Комментарии «БЫЛО → СТАЛО» отмечают отличия от версии для GitHub Actions.
+#
+# Переменные репозитория (Настройки → Секреты и переменные):
+#   SITE_URL  — https://<владелец>.gitverse.site/python-lab3/
+#   HELIOS_*  — как на GitHub; секрет HELIOS_SSH_KEY
+
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# БЫЛО: permissions (pages: write, id-token: write) и concurrency.
+# СТАЛО: убраны — в документации GitVerse не описаны; деплой Pages идёт без OIDC.
+
+jobs:
+  build-pages:
+    runs-on: ubuntu-latest            # метка облачного раннера: сверить в настройках CI/CD
+    # БЫЛО: actions/setup-python@v6 с cache: pip.
+    # СТАЛО: готовый образ с Python — не зависим от наличия setup-python в каталоге GitVerse.
+    container: python:3.14-slim
+    timeout-minutes: 15               # облачный раннер: 15 мин по умолчанию, максимум 30
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      DEPLOY_TARGET: gitverse-pages
+      # mkdocs.yml берёт коммит для build-marker из GITHUB_SHA; на GitVerse задаём явно из контекста
+      GITHUB_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4     # без изменений (используется в документации GitVerse)
+      - run: pip install -r requirements.txt
+      - run: python research/t2/provenance.py check docs/t2/results   # без изменений: только stdlib
+      - run: mkdocs build --strict                                     # без изменений
+      # БЫЛО: actions/upload-pages-artifact@v4 → СТАЛО: аналог GitVerse, тот же параметр path
+      - uses: gitverse/upload-pages-artifact@v1.0.0
+        with:
+          path: site
+
+  deploy-pages:
+    if: github.event_name != 'pull_request'   # контекст github.* — синоним gitverse.*
+    needs: build-pages
+    runs-on: ubuntu-latest
+    steps:
+      # БЫЛО: actions/deploy-pages@v4 + environment github-pages с url из outputs
+      # СТАЛО: аналог GitVerse; в настройках Pages источник = Workflow
+      - uses: gitverse/deploy-pages@v1.0.0
+
+  # Деплой на Helios переносится почти дословно: это обычные shell-команды.
+  deploy-helios:
+    if: github.event_name != 'pull_request' && vars.HELIOS_USER != ''
+    runs-on: ubuntu-latest
+    container: python:3.14-slim
+    env:
+      SITE_URL: ${{ vars.HELIOS_URL }}
+      DEPLOY_TARGET: helios
+      GITHUB_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update -qq && apt-get install -y -qq openssh-client   # в slim-образе нет ssh
+      - run: pip install -r requirements.txt
+      - run: python research/t2/provenance.py check docs/t2/results
+      - run: mkdocs build --strict
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.HELIOS_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/helios && chmod 600 ~/.ssh/helios
+          ssh-keyscan -p "${{ vars.HELIOS_PORT }}" "${{ vars.HELIOS_HOST }}" >> ~/.ssh/known_hosts
+      - name: Upload to Helios
+        env:
+          DEST: ${{ vars.HELIOS_PATH }}
+        run: |
+          case "$DEST" in public_html/?*) ;; *) echo "bad HELIOS_PATH"; exit 1;; esac
+          tar -C site -czf - . | ssh -i ~/.ssh/helios -p "${{ vars.HELIOS_PORT }}" \
+            "${{ vars.HELIOS_USER }}@${{ vars.HELIOS_HOST }}" \
+            "rm -rf '$DEST' && mkdir -p '$DEST' && tar -xzf - -C '$DEST' && chmod -R a+rX '$DEST'"
+      - run: python scripts/check_site.py "$SITE_URL" --commit "$GITHUB_SHA" --target helios
