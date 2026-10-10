@@ -1,0 +1,8 @@
+# Ключи хоста Helios ИТМО (порт 2222), сняты ssh-keyscan 2026-10-10. Отпечатки:
+#   2048 SHA256:xH6+RqQj7mVNJ3oWRblgzhxjdLJoNJ7ze4whon7ShzI [helios.cs.ifmo.ru]:2222 (RSA)
+#   256 SHA256:gwyf8uH0khUL3O4+0cHO2YPRQD0d2nonu/GlQjrkJoo [helios.cs.ifmo.ru]:2222 (ECDSA)
+#   256 SHA256:3n1x6Bq0hnfyxrWB/YeQQPaxUkE/GCX2vKKtl0nzGgM [helios.cs.ifmo.ru]:2222 (ED25519)
+# При смене ключей на сервере деплой упадёт намеренно: обновить файл после сверки отпечатков.
+[helios.cs.ifmo.ru]:2222 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMRumjLUtAip7HbgXj53VebTwOAjXkaMqnQysXPi+3jJf0wWygl/Ruo8gto+cgT38UyMTl+i7CQ7io9HrRPvnd0=
+[helios.cs.ifmo.ru]:2222 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILr5dsbF6eEBT5UFKGo1Qe3ina64YppvFELt8Wu+cZM1
+[helios.cs.ifmo.ru]:2222 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfeKZ7eGq2JCjNZhD0P8hzE2AfURbYEwbIMA/v1g9W0QLISNcrgpvBhV8W10TMwOGoVKdsPPodgT0AaTbLWYug05E1Eo+7U08q49k0bhkh8yLScxLN9D+83wRRYyx+2xmBjzs4gfQNgVgMWh/K3nooqIbe4z7iRcWxy7xBl1EgT3LKd42GSlTb9V4Dd9DNUk5jU+its2SW0oDbt0SpaBsOJBU325fD3fWr1A/aFPlyybshf10wJREMk6aeQZMcIVNv9n6hQ9IXSEMMG+4TWlzP3/SxO3jKB7Fj5Yt/wdOf1h7anCiGP/pUMAJ99y8dvHYMm5ga4PeaYWmHVorCZmz1

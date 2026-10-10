@@ -6,7 +6,7 @@
 |-----------|------------------|
 | Генератор | MkDocs 1.6 + Material for MkDocs 9.7 |
 | Python | 3.14, окружение `virtualenv` |
-| Зависимости | `requirements.txt` с точными версиями |
+| Зависимости | `requirements.txt` с точными версиями и SHA-256 хешами (`--require-hashes`) |
 | CI/CD | GitHub Actions |
 | Хостинг | GitHub Pages, Helios ИТМО |
 
