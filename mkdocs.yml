@@ -5,6 +5,9 @@ site_url: !ENV [SITE_URL, 'https://crasavella04.github.io/python-lab3/']
 repo_url: https://github.com/crasavella04/python-lab3
 repo_name: crasavella04/python-lab3
 edit_uri: edit/main/docs/
+copyright: >
+  Тексты — <a href="https://creativecommons.org/licenses/by/4.0/deed.ru">CC BY 4.0</a>,
+  код — <a href="https://github.com/crasavella04/python-lab3/blob/main/LICENSE">MIT</a>
 docs_dir: docs
 site_dir: site
 # Ссылки вида about/ вместо about.html; MkDocs делает их относительными,
@@ -42,6 +45,8 @@ nav:
   - Теоретическое задание: theory.md
   - Практическое задание: practice.md
   - О сайте: about.md
+  - Отладка: debugging.md
+  - Лицензии: license.md
 
 markdown_extensions:
   - admonition

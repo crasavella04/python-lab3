@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-PAGES = ["", "theory/", "practice/", "about/"]
+PAGES = ["", "theory/", "practice/", "about/", "debugging/", "license/"]
 ASSETS = [
     "assets/katex/katex.min.js",
     "assets/katex/auto-render.min.js",
