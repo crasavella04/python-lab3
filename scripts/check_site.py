@@ -21,7 +21,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-PAGES = ["", "theory/", "t2/", "t3/", "t4/", "practice/", "about/", "debugging/", "license/"]
+PAGES = ["", "t1/", "t2/", "t3/", "t4/", "t5/", "practice/", "about/", "debugging/", "license/"]
+# Старые адреса, которые должны продолжать работать (страница перенесена → переадресация)
+REDIRECTS = {"theory/": "../t1/"}
 ASSETS = [
     "assets/katex/katex.min.js",
     "assets/katex/auto-render.min.js",
@@ -74,6 +76,11 @@ def main():
     status, _ = fetch(base + "no-such-page-xyz/")
     check(status == 404, f"{status} несуществующая страница отдаёт 404")
 
+    for old, target in REDIRECTS.items():
+        status, body = fetch(base + old)
+        ok = status == 200 and f'url={target}' in body.decode("utf-8", "replace")
+        check(ok, f"{status} {old} переадресует на {target}")
+
     print("[2] Контрольная строка")
     marker = re.search(r'<meta name="build-marker" content="([^"]+)"', html[""])
     check(marker is not None, f"build-marker найден: {marker.group(1) if marker else '-'}")
@@ -104,7 +111,11 @@ def main():
     external = set()
     for page, text in html.items():
         for tag in re.findall(r"<(?:script|link)\b[^>]*>", text):
-            if 'rel="canonical"' in tag:  # canonical — это адрес страницы, а не загружаемый ресурс
+            # Учитываем только то, что браузер загружает. <link rel="canonical|license|schema.DC">
+            # — метаданные со ссылками на внешние адреса, а не ресурсы страницы
+            rel = re.search(r'rel="([^"]+)"', tag)
+            if tag.startswith("<link") and not (rel and set(rel.group(1).split()) &
+                                                {"stylesheet", "preload", "modulepreload", "icon"}):
                 continue
             src = re.search(r'(?:src|href)="([^"]+)"', tag)
             netloc = urllib.parse.urlsplit(src.group(1)).netloc if src else ""

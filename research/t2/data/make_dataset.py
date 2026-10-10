@@ -24,6 +24,7 @@ passport = {
     "sha256": hashlib.sha256(out.read_bytes()).hexdigest(),
     "rows": len(values),
     "source": "синтетика: gamma(2, 3) + N(0, 0.3), seed 1 (data/make_dataset.py)",
+    "license": "CC0-1.0",
 }
 out.with_name("DATASET.json").write_text(json.dumps(passport, indent=2, ensure_ascii=False) + "\n",
                                          encoding="utf-8", newline="\n")

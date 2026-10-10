@@ -3,5 +3,6 @@
   "version": "1.0",
   "sha256": "b8b6a1873a517976c2d017032c87bbff6e35937350eff6492b79139a9a28c020",
   "rows": 500,
-  "source": "синтетика: gamma(2, 3) + N(0, 0.3), seed 1 (data/make_dataset.py)"
+  "source": "синтетика: gamma(2, 3) + N(0, 0.3), seed 1 (data/make_dataset.py)",
+  "license": "CC0-1.0"
 }

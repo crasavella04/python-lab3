@@ -1,0 +1,24 @@
+# Как цитировать этот репозиторий. GitHub показывает по нему кнопку «Cite this repository»,
+# Zenodo берёт отсюда метаданные, если нет .zenodo.json.
+cff-version: 1.2.0
+message: "Если вы используете эти материалы, сошлитесь на них так."
+type: software
+title: "Результаты исследований: генераторы статических сайтов для публикации результатов"
+abstract: >-
+  Сайт с отчётами по курсу РРиИД Python: сравнение генераторов статических сайтов, конвейер
+  «эксперимент → артефакт → страница» с манифестом происхождения результатов, обзор отечественных
+  CI/CD и хостингов, безопасность пайплайна, публикуемость результатов.
+authors:
+  # Заменить на family-names / given-names и добавить orcid: "https://orcid.org/0000-..."
+  - alias: crasavella04
+repository-code: "https://github.com/crasavella04/python-lab3"
+url: "https://crasavella04.github.io/python-lab3/"
+license: MIT
+keywords:
+  - static site generator
+  - MkDocs
+  - reproducibility
+  - CI/CD
+date-released: "2026-10-10"
+# После выпуска DOI в Zenodo добавить:
+# doi: 10.5281/zenodo.XXXXXXX

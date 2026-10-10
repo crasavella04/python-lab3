@@ -1,0 +1,16 @@
+{
+  "title": "Результаты исследований: генераторы статических сайтов для публикации результатов",
+  "description": "<p>Сайт с отчётами по курсу РРиИД Python и его исходники: сравнение генераторов статических сайтов (T1), конвейер «эксперимент → артефакт → страница» с манифестом происхождения результатов (T2), отечественные CI/CD и хостинги (T3), безопасность пайплайна (T4), публикуемость результатов (T5).</p><p>Лицензии: тексты — CC BY 4.0, код — MIT, данные — CC0 1.0 (см. LICENSE, LICENSE-CONTENT, research/t2/data/DATASET.json).</p>",
+  "upload_type": "publication",
+  "publication_type": "report",
+  "creators": [
+    {"name": "crasavella04", "affiliation": "Университет ИТМО"}
+  ],
+  "license": "cc-by-4.0",
+  "language": "rus",
+  "keywords": ["static site generator", "MkDocs", "reproducibility", "CI/CD", "FAIR"],
+  "related_identifiers": [
+    {"identifier": "https://crasavella04.github.io/python-lab3/", "relation": "isDocumentedBy", "resource_type": "publication-report"},
+    {"identifier": "https://github.com/crasavella04/python-lab3", "relation": "isSupplementTo", "resource_type": "software"}
+  ]
+}

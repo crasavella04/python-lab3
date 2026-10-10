@@ -46,10 +46,11 @@ theme:
 nav:
   - Главная: index.md
   - Исследования:
-      - T1. Сравнение генераторов: theory.md
+      - T1. Сравнение генераторов: t1.md
       - T2. Конвейер вычислений: t2/index.md
       - T3. Отечественные CI/CD и хостинги: t3.md
       - T4. Доставка и безопасность: t4.md
+      - T5. Публикуемость и цитируемость: t5.md
   - Практическое задание: practice.md
   - О сайте: about.md
   - Отладка: debugging.md
@@ -62,6 +63,11 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      # Якоря из текста заголовка с кириллицей (#методика), а не порядковые (#_1):
+      # порядковые сдвигаются при добавлении раздела и ломают внешние ссылки
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
@@ -79,6 +85,19 @@ extra:
   build:
     commit: !ENV [GITHUB_SHA, local]
     target: !ENV [DEPLOY_TARGET, local]
+  # Метаданные для цитирования и индексации (overrides/partials/metadata.html).
+  # Страница считается публикацией, если в её front matter есть date.
+  citation:
+    authors:
+      - name: crasavella04      # заменить на ФИО
+        orcid: ""               # 0000-0000-0000-0000, если есть
+    institution: Университет ИТМО
+    doi: ""                     # DOI архива в Zenodo, после выпуска релиза
+    repository: https://github.com/crasavella04/python-lab3
+    license:
+      text: https://creativecommons.org/licenses/by/4.0/
+      code: https://opensource.org/license/mit
+      data: https://creativecommons.org/publicdomain/zero/1.0/
 
 extra_javascript:
   - assets/katex/katex.min.js
