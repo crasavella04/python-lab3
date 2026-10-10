@@ -45,11 +45,12 @@ myst_substitutions = {
     "p3_build_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     "p3_dataset_version": _passport["version"],
     "p3_dataset_rows": str(_passport["rows"]),
-    "p3_dataset_sha": _passport["sha256"][:12],
+    # обратные кавычки — внутри значения: внутри `кода` MyST подстановки не выполняет
+    "p3_dataset_sha": f"`{_passport['sha256'][:12]}`",
     "p3_dataset_changes": _passport["changes"],
     "p3_cache": {"hit": "взят из кэша", "miss": "посчитан заново"}.get(_run.get("cache"), "—"),
     "p3_seconds": str(_run.get("seconds", "—")).replace(".", ","),
-    "p3_key": _run.get("key", "—")[:12],
+    "p3_key": f"`{_run.get('key', '—')[:12]}`",
 }
 
 # -- HTML --------------------------------------------------------------------

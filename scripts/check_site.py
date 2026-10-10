@@ -73,6 +73,10 @@ def main():
         status, body = fetch(base + page)
         check(status == 200, f"{status} {base + page}")
         html[page] = body.decode("utf-8", "replace")
+        # Невыполненная подстановка MyST ({{ имя }}) вне кода — регрессия из P3
+        prose = re.sub(r"<(pre|code)\b.*?</\1>", "", html[page], flags=re.S)
+        if "{{" in prose:
+            check(False, f"{page or '/'}: на странице осталась невыполненная подстановка {{{{ … }}}}")
     status, _ = fetch(base + "no-such-page-xyz/")
     check(status == 404, f"{status} несуществующая страница отдаёт 404")
 
