@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-PAGES = ["", "t1/", "t2/", "t3/", "t4/", "t5/", "practice/", "p2/", "about/", "debugging/", "license/"]
+PAGES = ["", "t1/", "t2/", "t3/", "t4/", "t5/", "practice/", "p2/", "p3/", "about/", "debugging/", "license/"]
 # Старые адреса, которые должны продолжать работать (страница перенесена → переадресация)
 REDIRECTS = {"theory/": "../t1/"}
 ASSETS = [

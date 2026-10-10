@@ -5,8 +5,10 @@
   -b dirhtml    — адреса вида /t1/ вместо /t1.html (такие же, как были у MkDocs)
 """
 
+import json
 import os
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 # -- Проект ------------------------------------------------------------------
@@ -25,11 +27,30 @@ extensions = [
 ]
 
 # -- MyST --------------------------------------------------------------------
-myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence", "deflist", "attrs_block"]
+myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence", "deflist", "attrs_block", "substitution"]
 myst_heading_anchors = 3
 
 # Сгенерированные фрагменты T2 вставляются через {include}, отдельными страницами не собираются
-exclude_patterns = ["_build", "t2/results/*.md", "_extra"]
+exclude_patterns = ["_build", "t2/results/*.md", "p3/generated/*.md", "_extra"]
+
+# -- Метка версии P3: подставляется при сборке, в кэш расчёта не попадает ------
+_root = Path(__file__).resolve().parent.parent
+_commit = os.environ.get("GITHUB_SHA", "local")
+_passport = json.loads((_root / "research/p3/data/DATASET.json").read_text(encoding="utf-8"))
+_run_file = _root / "docs/p3/generated/run.json"
+_run = json.loads(_run_file.read_text(encoding="utf-8")) if _run_file.exists() else {}
+myst_substitutions = {
+    "p3_commit": (f"[`{_commit[:7]}`](https://github.com/crasavella04/python-lab3/tree/{_commit})"
+                  if _commit != "local" else "`local` (локальная сборка)"),
+    "p3_build_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+    "p3_dataset_version": _passport["version"],
+    "p3_dataset_rows": str(_passport["rows"]),
+    "p3_dataset_sha": _passport["sha256"][:12],
+    "p3_dataset_changes": _passport["changes"],
+    "p3_cache": {"hit": "взят из кэша", "miss": "посчитан заново"}.get(_run.get("cache"), "—"),
+    "p3_seconds": str(_run.get("seconds", "—")).replace(".", ","),
+    "p3_key": _run.get("key", "—")[:12],
+}
 
 # -- HTML --------------------------------------------------------------------
 html_theme = "furo"
@@ -105,6 +126,11 @@ def _copy_t2_results(app, exception):
     dest.mkdir(parents=True, exist_ok=True)
     for name in ["coverage.csv", "coverage.svg", "manifest.json"]:
         shutil.copy2(src / name, dest / name)
+    # P3: исходные числа результата по постоянному адресу /p3/generated/…
+    p3_src, p3_dest = Path(app.srcdir) / "p3" / "generated", Path(app.outdir) / "p3" / "generated"
+    p3_dest.mkdir(parents=True, exist_ok=True)
+    for name in ["summary.csv", "stats.json"]:
+        shutil.copy2(p3_src / name, p3_dest / name)
 
 
 def _unicode_section_ids(app, doctree):

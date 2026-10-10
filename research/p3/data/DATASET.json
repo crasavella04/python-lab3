@@ -1,0 +1,9 @@
+{
+  "file": "research/p3/data/measurements.csv",
+  "version": "1.0",
+  "sha256": "26e297195a7a7cdd0dec47b32861bd1d1dd6fc8a478376cb4510eca72125b50a",
+  "rows": 300,
+  "changes": "исходные измерения: по 100 в режимах A, B, C",
+  "source": "синтетика: логнормальное время отклика, research/p3/data/make_dataset.py",
+  "license": "CC0-1.0"
+}

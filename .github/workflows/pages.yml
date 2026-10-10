@@ -39,11 +39,15 @@ jobs:
       - name: Check T2 results provenance
         # Результаты T2 считаются вне CI; здесь только проверяем, что они соответствуют коду и данным
         run: python research/t2/provenance.py check docs/t2/results
-      - name: Build site (strict)
-        # -W: предупреждения = ошибки (аналог mkdocs --strict); dirhtml: адреса вида /t1/
-        run: sphinx-build -W --keep-going -b dirhtml docs site
-      - name: Spelling
-        run: python scripts/spellcheck.py site
+      - name: P3 results cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: .cache/p3
+          key: p3-${{ hashFiles('research/p3/data/**', 'research/p3/pipeline.py') }}
+          restore-keys: p3-
+      - name: Build site (P3 results → strict Sphinx build → spelling)
+        # nox -s site: research/p3/pipeline.py (кэш) → sphinx-build -W → scripts/spellcheck.py
+        run: python -m nox -s site
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
         with:
           path: site
@@ -93,9 +97,14 @@ jobs:
       - name: Check T2 results provenance
         # Результаты T2 считаются вне CI; здесь только проверяем, что они соответствуют коду и данным
         run: python research/t2/provenance.py check docs/t2/results
-      - name: Build site (strict)
-        # -W: предупреждения = ошибки (аналог mkdocs --strict); dirhtml: адреса вида /t1/
-        run: sphinx-build -W --keep-going -b dirhtml docs site
+      - name: P3 results cache
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: .cache/p3
+          key: p3-${{ hashFiles('research/p3/data/**', 'research/p3/pipeline.py') }}
+          restore-keys: p3-
+      - name: Build site (P3 results → strict Sphinx build)
+        run: python -m nox -s build
 
       # .htaccess не кладём: Apache на Helios не разрешает в нём Options/ErrorDocument
       # и отвечает 500 на весь каталог. Несуществующие страницы получают стандартный 404 сервера.

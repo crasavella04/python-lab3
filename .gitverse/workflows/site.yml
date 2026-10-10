@@ -60,11 +60,15 @@ jobs:
       - name: Происхождение результатов T2
         run: python research/t2/provenance.py check docs/t2/results
 
-      - name: Строгая сборка (предупреждения = ошибки)
-        run: sphinx-build -W --keep-going -b dirhtml docs site
+      - name: Кэш результатов P3
+        uses: actions/cache@v3
+        with:
+          path: .cache/p3
+          key: p3-${{ hashFiles('research/p3/data/**', 'research/p3/pipeline.py') }}
+          restore-keys: p3-
 
-      - name: Орфография
-        run: python scripts/spellcheck.py site
+      - name: Расчёт P3 → строгая сборка → орфография
+        run: python -m nox -s site
 
       - name: Внешние ссылки
         run: sphinx-build -q -b linkcheck docs _build/linkcheck
@@ -90,7 +94,13 @@ jobs:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('requirements.txt') }}
       - run: pip install --disable-pip-version-check --require-hashes -r requirements.txt
-      - run: sphinx-build -W --keep-going -b dirhtml docs site
+      - name: Кэш результатов P3
+        uses: actions/cache@v3
+        with:
+          path: .cache/p3
+          key: p3-${{ hashFiles('research/p3/data/**', 'research/p3/pipeline.py') }}
+          restore-keys: p3-
+      - run: python -m nox -s build
       - uses: gitverse/upload-pages-artifact@v1.0.0
         with:
           path: site
