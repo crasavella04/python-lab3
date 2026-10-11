@@ -1074,6 +1074,10 @@ sphinx-last-updated-by-git==0.3.8 \
     --hash=sha256:6382c8285ac1f222483a58569b78c0371af5e55f7fbf9c01e5e8a72d6fdfa499 \
     --hash=sha256:c145011f4609d841805b69a9300099fc02fed8f5bb9e5bcef77d97aea97b7761
     # via sphinx-sitemap
+sphinx-polyversion==3.0.0 \
+    --hash=sha256:5774b16a5f05b539d396da9f1aea0130b862790d6735f7321a4cb021749dfe44 \
+    --hash=sha256:b716098fb7971c14ce117d85af1f3e09c37bdddc83f37f857a489bf7dd030050
+    # via -r requirements.in
 sphinx-sitemap==2.9.0 \
     --hash=sha256:70f97bcdf444e3d68e118355cf82a1f54c4d3c03d651cd17fe87398b26e25e21 \
     --hash=sha256:f1f1d3a9ad012ba17a7ef0b560d303bff2d0db26647567d6e810bcc754466664

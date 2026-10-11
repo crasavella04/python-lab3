@@ -1,0 +1,13 @@
+{#-
+  P5: переключатель версий. Список версий не вшит в страницу, а берётся при открытии из
+  versions.json в корне сайта (его пишет scripts/build_versions.py). Поэтому и страницы старой
+  версии, собранные давно, показывают актуальный список и знают, какая версия — latest.
+  data-root — путь от этой страницы к корню её сборки; data-version — имя версии ("" — main).
+-#}
+<div class="version-switcher" data-root="{{ pathto('', 1) }}" data-version="{{ build.version }}"
+     data-page="{{ pagename }}">
+  <label class="version-switcher__label" for="version-select">Версия</label>
+  <select id="version-select" class="version-switcher__select" disabled>
+    <option>{{ build.version or "main (в разработке)" }}</option>
+  </select>
+</div>

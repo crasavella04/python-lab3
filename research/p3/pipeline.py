@@ -13,6 +13,7 @@
 
 import hashlib
 import json
+import os
 import shutil
 import sys
 import time
@@ -23,7 +24,8 @@ ROOT = HERE.parent.parent
 DATA = HERE / "data" / "measurements.csv"
 PASSPORT = HERE / "data" / "DATASET.json"
 OUT = ROOT / "docs" / "p3" / "generated"
-CACHE = ROOT / ".cache" / "p3"
+# P5: версии сайта собираются из выгрузок тегов во временных каталогах; P3_CACHE даёт им общий кэш
+CACHE = Path(os.environ["P3_CACHE"]) if os.environ.get("P3_CACHE") else ROOT / ".cache" / "p3"
 PARAMS = {"bootstrap": 20_000, "alpha": 0.05, "seed": 7}
 OUTPUTS = ["table.md", "summary.csv", "stats.json", "figure.svg"]
 KEEP = 5  # сколько результатов хранить в кэше

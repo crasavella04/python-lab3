@@ -17,8 +17,18 @@ author = "crasavella04"
 copyright = "тексты — CC BY 4.0, код — MIT, данные — CC0"
 language = "ru"
 
+# P5: версии сайта. sphinx-polyversion собирает каждый тег vX.Y в подкаталог vX.Y/ и передаёт
+# сведения о версии в POLYVERSION_DATA (scripts/build_versions.py). Без неё — сборка main (корень).
+_version = json.loads(os.environ.get("POLYVERSION_DATA") or "null")
+# Коммит сборки: у версии — коммит её тега; у main — SITE_COMMIT (сборка по тегу выгружает main,
+# а GITHUB_SHA там — коммит тега) или GITHUB_SHA
+_commit = (_version or {}).get("commit") or os.environ.get("SITE_COMMIT") or os.environ.get("GITHUB_SHA", "local")
+
 # Адрес зависит от площадки: в CI передаётся через SITE_URL (GitHub Pages, Helios, GitVerse Pages)
 html_baseurl = os.environ.get("SITE_URL", "https://crasavella04.github.io/python-lab3/")
+if _version:
+    html_baseurl = html_baseurl.rstrip("/") + f"/{_version['name']}/"
+html_search_language = "ru"           # P5: стемминг русского языка в индексе и в запросе (Snowball)
 
 extensions = [
     "myst_parser",
@@ -35,7 +45,6 @@ exclude_patterns = ["_build", "t2/results/*.md", "p3/generated/*.md", "_extra"]
 
 # -- Метка версии P3: подставляется при сборке, в кэш расчёта не попадает ------
 _root = Path(__file__).resolve().parent.parent
-_commit = os.environ.get("GITHUB_SHA", "local")
 _passport = json.loads((_root / "research/p3/data/DATASET.json").read_text(encoding="utf-8"))
 _run_file = _root / "docs/p3/generated/run.json"
 _run = json.loads(_run_file.read_text(encoding="utf-8")) if _run_file.exists() else {}
@@ -56,6 +65,9 @@ myst_substitutions = {
 # -- HTML --------------------------------------------------------------------
 html_theme = "furo"
 html_theme_options = {}
+# P5: переключатель версий — в боковой панели Furo, под поиском
+html_sidebars = {"**": ["sidebar/brand.html", "sidebar/search.html", "versions.html",
+                        "sidebar/scroll-start.html", "sidebar/navigation.html", "sidebar/scroll-end.html"]}
 if os.environ.get("SITE_PREVIEW"):
     html_theme_options["announcement"] = (
         f"Предварительная версия ветки <code>{os.environ['SITE_PREVIEW']}</code>. "
@@ -73,8 +85,8 @@ html_last_updated_use_utc = True
 # sphinxcontrib-katex не подошёл: CSS и шрифты он по умолчанию берёт с jsDelivr.
 # Разметку формул делает штатный код sphinx.ext.mathjax, а рендерит её наш KaTeX (см. setup()).
 html_math_renderer = "katex_local"
-html_css_files = ["katex/katex.min.css"]
-html_js_files = ["katex/katex.min.js", "katex/auto-render.min.js", "katex-init.js"]
+html_css_files = ["katex/katex.min.css", "versions.css"]
+html_js_files = ["katex/katex.min.js", "katex/auto-render.min.js", "katex-init.js", "versions.js"]
 
 # sitemap.xml с адресами той площадки, под которую идёт сборка; <lastmod> — дата коммита страницы
 sitemap_url_scheme = "{link}"
@@ -85,10 +97,12 @@ sitemap_excludes = ["search/", "genindex/"]
 # -- Метаданные для шаблонов (_templates/page.html) ---------------------------
 html_context = {
     "build": {
-        "commit": os.environ.get("GITHUB_SHA", "local"),
+        "commit": _commit,
         "target": os.environ.get("DEPLOY_TARGET", "local"),
         # P4: сборка для preview ветки — не индексируется поисковиками, сверху плашка
         "preview": os.environ.get("SITE_PREVIEW", ""),
+        # P5: имя версии для переключателя ("" — main, корень сайта)
+        "version": (_version or {}).get("name", ""),
     },
     "citation": {
         "authors": [{"name": "crasavella04", "orcid": ""}],   # заменить на ФИО и ORCID

@@ -1,7 +1,7 @@
 """Сборка сайта одной командой: данные → результат → сайт (P3).
 
     python -m nox -s site      # расчёт P3 (с кэшем) → строгая сборка Sphinx → орфография   [по умолчанию]
-    python -m nox -s build     # расчёт P3 → строгая сборка (без орфографии; для деплоя на Helios)
+    python -m nox -s build     # расчёт P3 → строгая сборка → версии по тегам (без орфографии; для Helios)
     python -m nox -s results   # только расчёт P3
 
 Сессии работают в текущем окружении (python=False): зависимости уже стоят из requirements.txt
@@ -27,6 +27,8 @@ def results(session):
 def build(session):
     results(session)
     session.run(PY, "-m", "sphinx", "-W", "--keep-going", "-b", "dirhtml", "docs", "site")
+    # P5: версии по тегам vX.Y в site/vX.Y/, алиас site/latest/, site/versions.json
+    session.run(PY, "scripts/build_versions.py", "site")
 
 
 @nox.session(python=False)

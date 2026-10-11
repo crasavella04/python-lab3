@@ -9,3 +9,4 @@ spylls==0.1.7   # проверка орфографии (стадия lint), Hun
 numpy==2.5.3     # P3: расчёт при сборке сайта
 matplotlib==3.11.2
 nox==2026.8.17   # сборка: nox -s site (расчёт P3 → Sphinx → орфография)
+sphinx-polyversion==3.0.0   # P5: версии сайта по git-тегам (sphinx-multiversion несовместим со Sphinx 9)

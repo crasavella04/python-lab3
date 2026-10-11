@@ -1,0 +1,28 @@
+/* P5: переключатель версий в боковой панели и предупреждение на старых версиях */
+.version-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem var(--sidebar-item-spacing-horizontal);
+  font-size: var(--sidebar-item-font-size);
+}
+.version-switcher__label {
+  color: var(--color-foreground-secondary);
+}
+.version-switcher__select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.2rem 0.3rem;
+  color: var(--color-foreground-primary);
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-background-border);
+  border-radius: 0.2rem;
+  font: inherit;
+}
+.version-warning {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 0.25rem solid var(--color-admonition-title--warning, #f0b37e);
+  background: var(--color-admonition-title-background--warning, rgba(240, 179, 126, 0.15));
+  border-radius: 0.2rem;
+}
