@@ -9,6 +9,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "P5: выпущенная версия (тег) — проверить, что она опубликована и стала latest"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -23,13 +28,36 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
+  # ---------- Выпуск версии по тегу (P5) ----------
+  # git tag v1.1 && git push --tags. Публиковать прямо из запуска по тегу нельзя: окружение
+  # github-pages по умолчанию пускает только main («Tag "v1.0" is not allowed to deploy to
+  # github-pages due to environment protection rules» — так и случилось с v1.0). Поэтому запуск по
+  # тегу проверяет имя тега и запускает этот же workflow на main с version=<тег>: тот собирает
+  # корень из main и все теги в vX.Y/, выкладывает на Pages и Helios и проверяет, что версия
+  # опубликована и стала latest. GITHUB_TOKEN может порождать запуски workflow_dispatch.
+  release-tag:
+    if: github.ref_type == 'tag' && github.server_url == 'https://github.com'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch build and deploy from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          case "$TAG" in
+            v[0-9]*.[0-9]*) ;;
+            *) echo "::error::тег версии — vX.Y, получено $TAG"; exit 1 ;;
+          esac
+          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main -f version="$TAG"
+          echo "::notice title=Выпуск $TAG::запущена сборка и выкладка из main с проверкой версии $TAG"
+
   # ---------- GitHub Pages ----------
   build-pages:
     # GitVerse тоже читает .github/workflows/; там этот workflow не нужен (у GitVerse свой — .gitverse/).
     # Ветки, кроме main, на Pages не публикуются: у репозитория один сайт Pages, preview — на Helios
-    if: >-
-      github.server_url == 'https://github.com' &&
-      (github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    if: github.server_url == 'https://github.com' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     outputs:
       commit: ${{ steps.commit.outputs.commit }}
@@ -39,13 +67,11 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          # Даты страниц берутся из истории Git, версии P5 — из всех тегов: нужна полная история.
-          # Запуск по тегу собирает корень из main, сам тег соберётся в vX.Y/ (scripts/build_versions.py)
+          # Даты страниц берутся из истории Git, версии P5 — из всех тегов: нужна полная история
           fetch-depth: 0
-          ref: ${{ github.ref_type == 'tag' && 'main' || '' }}
       - id: commit
         name: Commit of the root build
-        # GITHUB_SHA при запуске по тегу — коммит тега, а корень собран из main
+        # Коммит корня сайта — для контрольной строки и проверки после выкладки
         run: |
           echo "SITE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -71,10 +97,8 @@ jobs:
           path: site
 
   deploy-pages:
-    # В PR только проверяем сборку, публикуем из main и по тегу версии
-    if: >-
-      github.event_name != 'pull_request' && github.server_url == 'https://github.com' &&
-      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    # В PR только проверяем сборку, публикуем лишь из main (выпуск по тегу — тоже из main, см. release-tag)
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.server_url == 'https://github.com'
     needs: build-pages
     runs-on: ubuntu-latest
     permissions:
@@ -90,7 +114,7 @@ jobs:
       - name: Verify deployed site
         env:
           SITE_COMMIT: ${{ needs.build-pages.outputs.commit }}
-        run: python scripts/check_site.py "${{ steps.deployment.outputs.page_url }}" --commit "$SITE_COMMIT" --target github-pages ${{ github.ref_type == 'tag' && format('--version {0}', github.ref_name) || '' }}
+        run: python scripts/check_site.py "${{ steps.deployment.outputs.page_url }}" --commit "$SITE_COMMIT" --target github-pages ${{ inputs.version && format('--version {0}', inputs.version) || '' }}
 
   # ---------- Helios ИТМО (P4) ----------
   # main → корень сайта, остальные ветки → preview/<имя>/. Выкладка релизами (scripts/helios_deploy.sh):
@@ -100,26 +124,26 @@ jobs:
   # Настройки: variables HELIOS_HOST, HELIOS_PORT, HELIOS_USER, HELIOS_URL; secret HELIOS_SSH_KEY
   # (отдельный ключ только для деплоя). Пока переменные не заданы, job пропускается.
   deploy-helios:
-    if: github.event_name != 'pull_request' && vars.HELIOS_USER != '' && github.server_url == 'https://github.com'
+    if: >-
+      github.event_name != 'pull_request' && github.ref_type != 'tag' &&
+      vars.HELIOS_USER != '' && github.server_url == 'https://github.com'
     runs-on: ubuntu-latest
     # Выкладки на Helios идут строго по очереди: корень и preview живут в одном каталоге
     concurrency:
       group: helios
       cancel-in-progress: false
     environment:
-      name: ${{ (github.ref == 'refs/heads/main' || github.ref_type == 'tag') && 'helios' || 'helios-preview' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'helios' || 'helios-preview' }}
       url: ${{ steps.target.outputs.url }}
     steps:
       - name: Target (root or preview)
         id: target
         env:
           BRANCH: ${{ github.ref_name }}
-          REF_TYPE: ${{ github.ref_type }}
           HELIOS_URL: ${{ vars.HELIOS_URL }}
         run: |
           base="${HELIOS_URL%/}"
-          # Тег версии (P5) публикует весь сайт в корень: корень — main, тег — в vX.Y/
-          if [ "$BRANCH" = main ] || [ "$REF_TYPE" = tag ]; then
+          if [ "$BRANCH" = main ]; then
             target=root; url="$base/"; deploy_target=helios
           else
             # Имя каталога из имени ветки: feature/New_X → feature-new-x (то же правило — в helios-admin.yml)
@@ -135,7 +159,6 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0   # даты из истории Git; версии P5 — из всех тегов
-          ref: ${{ github.ref_type == 'tag' && 'main' || '' }}
       - name: Commit of the root build
         run: echo "SITE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -162,7 +185,7 @@ jobs:
         # Демонстрация отказов: метка [p4-fault: …] в сообщении коммита ветки (в main не действует).
         #   drop-asset — в сборке нет katex.min.js: выкладка проходит, healthcheck — нет → откат
         #   interrupt  — передача архива обрывается на середине
-        if: github.ref_type == 'branch' && github.ref != 'refs/heads/main'
+        if: github.ref != 'refs/heads/main'
         env:
           MSG: ${{ github.event.head_commit.message }}
         run: |
@@ -213,7 +236,7 @@ jobs:
       - name: Healthcheck
         id: health
         # HTTP 200 и контрольная строка <meta name="build-marker"> с коммитом этой сборки (+ ресурсы, поиск)
-        run: python scripts/check_site.py "$SITE_URL" --commit "$SITE_COMMIT" --target "$DEPLOY_TARGET" ${{ github.ref_type == 'tag' && format('--version {0}', github.ref_name) || '' }}
+        run: python scripts/check_site.py "$SITE_URL" --commit "$SITE_COMMIT" --target "$DEPLOY_TARGET" ${{ inputs.version && format('--version {0}', inputs.version) || '' }}
 
       - name: Roll back after failed healthcheck
         if: failure() && steps.health.outcome == 'failure'
