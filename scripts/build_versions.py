@@ -20,6 +20,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -55,6 +56,12 @@ class Driver(DefaultDriver):
         pass   # корень — сборка main; versions.json пишем сами (ниже), со своим форматом
 
 
+def commit_of(rev):
+    """Коммит тега. rev.obj у аннотированного тега — хеш объекта тега, а не коммита: ссылка
+    github.com/…/tree/<он> отвечает 404, а в контрольной строке был бы не тот хеш (так и вышло у v1.0)."""
+    return subprocess.check_output(["git", "rev-parse", f"{rev.ref}^{{commit}}"], cwd=ROOT, text=True).strip()
+
+
 def version_key(name):
     return tuple(int(x) for x in re.findall(r"\d+", name))
 
@@ -77,7 +84,7 @@ def main():
         builder=builder,
         env=InCheckout.factory(),
         # Это попадёт в POLYVERSION_DATA → docs/conf.py: имя версии, коммит тега
-        data_factory=lambda drv, rev, env: {"name": rev.name, "commit": rev.obj, "date": rev.date.isoformat()},
+        data_factory=lambda drv, rev, env: {"name": rev.name, "commit": commit_of(rev), "date": rev.date.isoformat()},
     )
     driver.run(sequential=True)
     if driver.failed:
@@ -94,7 +101,7 @@ def main():
                          "target": latest.name})
     for t in tags:
         versions.append({"name": t.name, "path": f"{t.name}/", "title": t.name,
-                         "commit": t.obj, "date": t.date.isoformat()})
+                         "commit": commit_of(t), "date": t.date.isoformat()})
     (out / "versions.json").write_text(json.dumps(
         {"latest": tags[0].name if tags else None, "versions": versions}, ensure_ascii=False, indent=1) + "\n",
         encoding="utf-8", newline="\n")
