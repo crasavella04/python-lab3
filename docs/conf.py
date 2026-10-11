@@ -92,6 +92,9 @@ html_js_files = ["katex/katex.min.js", "katex/auto-render.min.js", "katex-init.j
 sitemap_url_scheme = "{link}"
 sitemap_locales = [None]
 sitemap_show_lastmod = True
+if _version:
+    # Версия собирается из выгрузки тега без .git: даты страниц из истории взять неоткуда
+    sitemap_show_lastmod = False
 sitemap_excludes = ["search/", "genindex/"]
 
 # -- Метаданные для шаблонов (_templates/page.html) ---------------------------
