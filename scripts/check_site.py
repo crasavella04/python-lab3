@@ -65,6 +65,7 @@ def main():
     parser.add_argument("base_url")
     parser.add_argument("--commit", help="ожидаемый коммит в build-marker")
     parser.add_argument("--target", help="ожидаемая площадка в build-marker")
+    parser.add_argument("--version", help="P5: версия (тег), которая должна быть опубликована")
     args = parser.parse_args()
 
     base = args.base_url.rstrip("/") + "/"
@@ -139,6 +140,35 @@ def main():
             if netloc and netloc != host:
                 external.add(src.group(1))
     check(not external, f"скрипты и стили только с {host}: {sorted(external) or 'внешних нет'}")
+
+    print("[5] Версии (P5)")
+    check('class="version-switcher"' in html[""], "переключатель версий на главной")
+    status, body = fetch(base + "versions.json")
+    if status != 200:
+        check(not args.version, f"{status} versions.json")
+    else:
+        data = json.loads(body.decode("utf-8"))
+        tags = [v for v in data["versions"] if v.get("commit")]
+        names = [v["name"] for v in tags]
+        newest = max(names, key=lambda n: tuple(int(x) for x in re.findall(r"\d+", n)), default=None)
+        check(data["latest"] == newest, f"latest → {data['latest']} (новейшая версия: {newest})")
+        if args.version:
+            check(args.version in names, f"версия {args.version} опубликована: {names}")
+
+        def marker_of(path):
+            st, page = fetch(base + path)
+            m = re.search(r'<meta name="build-marker" content="[^:]+:([^:"]+)', page.decode("utf-8", "replace"))
+            return st, m.group(1) if m else None
+
+        for v in tags:
+            st, commit = marker_of(v["path"])
+            check(st == 200 and commit == v["commit"], f"{st} {v['path']}: собрана из тега, коммит {str(commit)[:7]}")
+            st, _ = marker_of(v["path"] + "p3/")
+            check(st == 200, f"{st} {v['path']}p3/")
+        if data["latest"]:
+            target = next(v for v in tags if v["name"] == data["latest"])
+            st, commit = marker_of("latest/")
+            check(st == 200 and commit == target["commit"], f"{st} latest/ = {data['latest']} ({str(commit)[:7]})")
 
     print()
     if failures:

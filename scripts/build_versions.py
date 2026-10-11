@@ -47,9 +47,8 @@ class Driver(DefaultDriver):
     def build_failed(self, rev, exc_info):
         # По умолчанию ошибка только пишется в журнал, и сайт вышел бы без версии. Здесь — падение.
         super().build_failed(rev, exc_info)
-        err = exc_info[1].__cause__
-        print(f"ВЕРСИЯ {rev.name}: сборка не удалась\n{getattr(err, 'stdout', '')}\n{getattr(err, 'stderr', '')}",
-              file=sys.stderr)
+        # Вывод sphinx-build уже в журнале: polyversion не перехватывает stdout/stderr процесса
+        print(f"P5: версия {rev.name} не собрана: {exc_info[1].__cause__}", file=sys.stderr)
         self.failed.append(rev.name)
 
     async def build_root(self):

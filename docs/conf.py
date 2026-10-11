@@ -86,7 +86,7 @@ html_last_updated_use_utc = True
 # Разметку формул делает штатный код sphinx.ext.mathjax, а рендерит её наш KaTeX (см. setup()).
 html_math_renderer = "katex_local"
 html_css_files = ["katex/katex.min.css", "versions.css"]
-html_js_files = ["katex/katex.min.js", "katex/auto-render.min.js", "katex-init.js", "versions.js"]
+html_js_files = ["katex/katex.min.js", "katex/auto-render.min.js", "katex-init.js", "versions.js", "search-ru.js"]
 
 # sitemap.xml с адресами той площадки, под которую идёт сборка; <lastmod> — дата коммита страницы
 sitemap_url_scheme = "{link}"
