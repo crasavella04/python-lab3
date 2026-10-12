@@ -8,10 +8,12 @@ date: 2026-10-12
 
 **Upload to Helios ITMO** — composite action, который загружает каталог на Helios
 (`helios.cs.ifmo.ru:2222`) или на любой другой SSH-хост и возвращает публичный адрес
-`https://se.ifmo.ru/~<логин>/…`. Готовый для Marketplace репозиторий — `crasavella04/helios-upload-action`
-(публикация в Marketplace — последний шаг, см. ниже). Исходники лежат и в этом репозитории, в каталоге
-[`actions/helios-upload`](https://github.com/crasavella04/python-lab3/tree/main/actions/helios-upload),
-откуда отдельный репозиторий получен командой `git subtree split`.
+`https://se.ifmo.ru/~<логин>/…`.
+
+Репозиторий: **<https://github.com/crasavella04/helios-upload-action>** (выпуск `v1.0.0`, подвижный тег `v1`). Разрабатывался action в
+каталоге `actions/helios-upload` этого репозитория и был вынесен в отдельный командой
+`git subtree split`, вместе с историей коммитов. После этого копия отсюда удалена, а python-lab3
+подключает опубликованный action.
 
 ## Что умеет
 
@@ -64,8 +66,8 @@ date: 2026-10-12
 Проверять action на настоящем Helios при каждом изменении неудобно, да и секреты в чужих pull
 request недоступны. Поэтому тесты поднимают **одноразовый `sshd` на 127.0.0.1:2222** с
 только что созданными ключами
-([`tests/sshd.sh`](https://github.com/crasavella04/python-lab3/blob/main/actions/helios-upload/tests/sshd.sh)),
-а [`tests/e2e.sh`](https://github.com/crasavella04/python-lab3/blob/main/actions/helios-upload/tests/e2e.sh)
+([`tests/sshd.sh`](https://github.com/crasavella04/helios-upload-action/blob/main/tests/sshd.sh)),
+а [`tests/e2e.sh`](https://github.com/crasavella04/helios-upload-action/blob/main/tests/e2e.sh)
 проверяет 18 случаев:
 
 - rsync и tar: файлы на месте, верные выходы, права 644;
@@ -75,8 +77,9 @@ request недоступны. Поэтому тесты поднимают **о�
 - отказ `delete` для `public_html`;
 - отказ при неверном ключе хоста и при чужом хосте без `known-hosts`.
 
-Тесты проходят в контейнере Ubuntu 24.04 (`docker run … bash tests/e2e.sh`), а в CI action — на
-Ubuntu 24.04 и 22.04. Отдельный job вызывает action как `uses: ./`, то есть проверяет сам
+Тесты проходят в контейнере Ubuntu 24.04 (`docker run … bash tests/e2e.sh`) и в
+[CI action](https://github.com/crasavella04/helios-upload-action/actions/workflows/test.yml) — на Ubuntu 24.04 и 22.04. Первый запуск в
+отдельном репозитории полностью зелёный: e2e на обеих версиях, `uses: ./` и `shellcheck`. Отдельный job вызывает action как `uses: ./`, то есть проверяет сам
 `action.yml`: разводку входов, выходы, падение на опасном пути. Ещё один job — `shellcheck`.
 
 **Что этот job поймал бы.** Первая выкладка из этого репозитория упала ещё до запуска скрипта:
@@ -94,15 +97,22 @@ Failed to load …/actions/helios-upload/action.yml
 
 Семантические теги: `v1.0.0`, `v1.0.1`, `v1.1.0`… Мажорный тег `v1` подвижный и указывает на
 последний выпуск `v1.x.y`. Workflow
-[`major-tag.yml`](https://github.com/crasavella04/python-lab3/blob/main/actions/helios-upload/.github/workflows/major-tag.yml)
+[`major-tag.yml`](https://github.com/crasavella04/helios-upload-action/blob/main/.github/workflows/major-tag.yml)
 переносит его автоматически при публикации каждого выпуска (`git tag -f v1 && git push -f`).
 Пользователь, указавший `@v1`, получает исправления без правки своего workflow. Если нужна
 неизменная ссылка, указывают `@v1.0.0` или SHA коммита (T4).
 
 ## Где используется
 
-В этом же репозитории, job `publish-data` в
-[`pages.yml`](https://github.com/crasavella04/python-lab3/blob/main/.github/workflows/pages.yml).
+В этом репозитории, job `publish-data` в
+[`pages.yml`](https://github.com/crasavella04/python-lab3/blob/main/.github/workflows/pages.yml):
+
+```yaml
+- uses: crasavella04/helios-upload-action@0b9ce27cd15b7f702f756d915cd7b10b38242688 # v1.0.0
+```
+
+Сам action закреплён по SHA, как и остальные action проекта (T4). Тег `v1` нужен тем, кто
+хочет получать исправления автоматически.
 Наборы данных T2 и P3 с паспортами, итоговая таблица T2, `CITATION.cff` и `SHA256SUMS` публикуются
 на Helios отдельно от сайта:
 **<https://se.ifmo.ru/~s564180/python-lab3-data/>**. После загрузки job скачивает каждый файл по
@@ -122,6 +132,6 @@ Failed to load …/actions/helios-upload/action.yml
 Marketplace* → категория → тег `v1.0.0`. Модерации нет. Два последних шага может сделать только
 владелец аккаунта.
 
-Репозиторий для публикации готов: история каталога `actions/helios-upload`, вынесенная
-`git subtree split`, — `action.yml`, `upload.sh`, встроенные ключи Helios, тесты, CI,
-README (на английском и русском), лицензия MIT, `CHANGELOG.md`.
+**Статус.** Репозиторий, тег `v1.0.0` и подвижный `v1` опубликованы, CI зелёный. Выпуск в
+Marketplace ожидает подтверждения владельцем аккаунта.
+
