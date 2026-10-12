@@ -1,8 +1,7 @@
 # python-lab3 — генераторы статических сайтов для публикации результатов
 
 [![GitHub Actions](https://github.com/crasavella04/python-lab3/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/crasavella04/python-lab3/actions/workflows/pages.yml)
-<!-- GitVerse: заменить OWNER на владельца репозитория на GitVerse -->
-[![GitVerse CI](https://gitverse.ru/api/repos/OWNER/python-lab3/actions/workflows/site.yml/badge.svg?branch=main&lang=ru)](https://gitverse.ru/OWNER/python-lab3/cicd?workflow=site.yml&workflowName=Сайт)
+[![GitVerse CI](https://gitverse.ru/api/repos/crasavella04/python-lab3/actions/workflows/site.yml/badge.svg?branch=main&lang=ru)](https://gitverse.ru/crasavella04/python-lab3/cicd?workflow=site.yml&workflowName=Сайт)
 
 Лабораторная работа 3 курса РРиИД Python: сайт с отчётами об исследовании генераторов
 статических сайтов и автоматизации их публикации.
