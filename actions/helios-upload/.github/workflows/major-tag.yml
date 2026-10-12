@@ -1,0 +1,25 @@
+name: Move major tag
+
+# Semantic versioning: every release vX.Y.Z also moves the major tag vX to the same commit,
+# so `uses: crasavella04/helios-upload-action@v1` always gets the latest compatible release.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Move vX to this release
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          [[ "$TAG" =~ ^v([0-9]+)\.[0-9]+\.[0-9]+$ ]] || { echo "::notice::$TAG is not vX.Y.Z — major tag unchanged"; exit 0; }
+          major="v${BASH_REMATCH[1]}"
+          git tag -f "$major" "$GITHUB_SHA"
+          git push -f origin "refs/tags/$major"
+          echo "::notice::$major → $TAG ($GITHUB_SHA)"

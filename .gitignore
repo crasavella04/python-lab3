@@ -50,3 +50,4 @@ research/p2/lighthouse/
 # P3: результаты считаются при сборке (стратегия 1) и кэшируются
 docs/p3/generated/
 .cache/
+data-package/

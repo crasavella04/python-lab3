@@ -1,0 +1,96 @@
+name: Upload to Helios ITMO
+description: >-
+  Upload a directory to the Helios ITMO server (helios.cs.ifmo.ru) over SSH — rsync when available,
+  tar otherwise — with strict host key checking, optional --delete and a ready public URL.
+author: crasavella04
+
+branding:
+  icon: upload-cloud
+  color: blue
+
+inputs:
+  host:
+    description: SSH host. Defaults to Helios ITMO.
+    required: false
+    default: helios.cs.ifmo.ru
+  port:
+    description: SSH port (Helios listens on 2222).
+    required: false
+    default: "2222"
+  username:
+    description: Login on the server, e.g. s123456.
+    required: true
+  key:
+    description: >-
+      Private SSH key (OpenSSH format) of a dedicated deploy key. Pass it from a secret:
+      `key: ${{ secrets.HELIOS_SSH_KEY }}`. It is written to a temporary file and removed afterwards.
+    required: true
+  source:
+    description: Local directory to upload (its contents, not the directory itself).
+    required: false
+    default: "."
+  destination:
+    description: >-
+      Target directory relative to the home directory, e.g. public_html/my-site.
+      Absolute paths and `..` are rejected.
+    required: true
+  delete:
+    description: >-
+      'true' — remove files in destination that are absent from source (like rsync --delete).
+      Refused for the home directory and for public_html itself.
+    required: false
+    default: "false"
+  method:
+    description: "auto (rsync if present on both sides, else tar), rsync or tar."
+    required: false
+    default: auto
+  known-hosts:
+    description: >-
+      known_hosts lines for the server. Empty — the Helios keys bundled with the action
+      (only valid for helios.cs.ifmo.ru:2222). Host keys are always checked strictly.
+    required: false
+    default: ""
+  make-readable:
+    description: "'true' — chmod -R a+rX on the destination so the web server can serve the files."
+    required: false
+    default: "true"
+
+outputs:
+  method:
+    description: Transfer method actually used (rsync or tar).
+    value: ${{ steps.upload.outputs.method }}
+  files:
+    description: Number of files in the uploaded directory.
+    value: ${{ steps.upload.outputs.files }}
+  bytes:
+    description: Total size of the uploaded files in bytes.
+    value: ${{ steps.upload.outputs.bytes }}
+  duration-ms:
+    description: Transfer time in milliseconds.
+    value: ${{ steps.upload.outputs.duration-ms }}
+  url:
+    description: >-
+      Public URL when destination is inside public_html and the host is Helios
+      (https://se.ifmo.ru/~<username>/<path>/); empty otherwise.
+    value: ${{ steps.upload.outputs.url }}
+
+runs:
+  using: composite
+  steps:
+    - id: upload
+      shell: bash
+      # Inputs are passed only through environment variables: expanding inputs directly
+      # in the script text would allow command injection through an input value
+      env:
+        INPUT_HOST: ${{ inputs.host }}
+        INPUT_PORT: ${{ inputs.port }}
+        INPUT_USERNAME: ${{ inputs.username }}
+        INPUT_KEY: ${{ inputs.key }}
+        INPUT_SOURCE: ${{ inputs.source }}
+        INPUT_DESTINATION: ${{ inputs.destination }}
+        INPUT_DELETE: ${{ inputs.delete }}
+        INPUT_METHOD: ${{ inputs.method }}
+        INPUT_KNOWN_HOSTS: ${{ inputs.known-hosts }}
+        INPUT_MAKE_READABLE: ${{ inputs.make-readable }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: bash "$ACTION_PATH/upload.sh"
