@@ -105,7 +105,9 @@ jobs:
           key: p3-${{ hashFiles('research/p3/data/**', 'research/p3/pipeline.py') }}
           restore-keys: p3-
       - run: python -m nox -s build
-      - uses: gitverse/upload-pages-artifact@v1.0.0
+      # На GitVerse actions/* берутся из зеркала gitverse.ru/actions — это реализации GitVerse
+      # (имена как на GitHub). gitverse/upload-pages-artifact, как писали в T3, не существует
+      - uses: actions/upload-pages-artifact@v1.0.0
         with:
           path: site
 
@@ -117,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: gitverse/deploy-pages@v1.0.0
+      - uses: actions/deploy-pages@v1.0.0
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:

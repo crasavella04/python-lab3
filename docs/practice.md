@@ -197,7 +197,7 @@ https://gitverse.ru/api/repos/OWNER/python-lab3/actions/workflows/site.yml/badge
 | `secrets.*`, `vars.*`, `github.*` | | без изменений | без изменений | ✔ |
 | Python | `actions/setup-python` по SHA, `cache: pip` | `actions/setup-python@v5` + отдельный `actions/cache@v3` | заменить контейнером `python:3.14-slim` | **иначе**: документация GitVerse использует зеркала `actions/*`, поэтому оставлен `setup-python`. Кэш — отдельным действием, чтобы управлять ключом и видеть попадание в лог |
 | Закрепление действий | по SHA коммита (T4) | по тегам `@v4`, `@v5`, `@v1.0.0` | — | **отступление от T4**: документация GitVerse приводит только теги; совпадут ли SHA зеркал с GitHub, проверяется первым запуском |
-| Pages | `actions/upload-pages-artifact` + `actions/deploy-pages` | `gitverse/upload-pages-artifact@v1.0.0` + `gitverse/deploy-pages@v1.0.0` | замена имён | ✔ |
+| Pages | `actions/upload-pages-artifact` + `actions/deploy-pages` | те же имена `@v1.0.0`: на GitVerse `actions/*` берутся из зеркала gitverse.ru/actions, там реализации GitVerse | только версия (в T3 ошибочно — `gitverse/…`, такого нет) | ✔ |
 | `permissions`, `id-token: write` (OIDC) | есть | убраны | не поддерживается | ✔ |
 | `concurrency` | есть | убрана | не поддерживается | ✔ |
 | `environment` с URL из выхода `deploy-pages` | есть | адрес из `vars.PAGES_URL` | частично | ✔ |

@@ -36,7 +36,7 @@ jobs:
       - run: python research/t2/provenance.py check docs/t2/results   # без изменений: только stdlib
       - run: mkdocs build --strict                                     # без изменений
       # БЫЛО: actions/upload-pages-artifact@v4 → СТАЛО: аналог GitVerse, тот же параметр path
-      - uses: gitverse/upload-pages-artifact@v1.0.0
+      - uses: actions/upload-pages-artifact@v1.0.0
         with:
           path: site
 
@@ -47,7 +47,7 @@ jobs:
     steps:
       # БЫЛО: actions/deploy-pages@v4 + environment github-pages с url из outputs
       # СТАЛО: аналог GitVerse; в настройках Pages источник = Workflow
-      - uses: gitverse/deploy-pages@v1.0.0
+      - uses: actions/deploy-pages@v1.0.0
 
   # Деплой на Helios переносится почти дословно: это обычные shell-команды.
   deploy-helios:
