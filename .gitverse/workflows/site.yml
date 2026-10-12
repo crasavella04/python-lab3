@@ -71,7 +71,11 @@ jobs:
         run: python -m nox -s site
 
       - name: Внешние ссылки
-        run: sphinx-build -q -b linkcheck docs _build/linkcheck
+        # Падаем только на битых ссылках: тайм-аут чужого сервера (github.com, docs.selectel.ru
+        # с раннеров GitVerse) — предупреждение, а не повод не выкладывать сайт
+        run: |
+          sphinx-build -q -b linkcheck docs _build/linkcheck || true
+          python scripts/linkcheck_gate.py _build/linkcheck/output.json
 
   build:
     name: build (сайт под адрес GitVerse Pages)
