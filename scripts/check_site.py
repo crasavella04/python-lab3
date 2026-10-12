@@ -82,8 +82,17 @@ def main():
         prose = re.sub(r"<(pre|code)\b.*?</\1>", "", html[page], flags=re.S)
         if "{{" in prose:
             check(False, f"{page or '/'}: на странице осталась невыполненная подстановка {{{{ … }}}}")
-    status, _ = fetch(base + "no-such-page-xyz/")
-    check(status == 404, f"{status} несуществующая страница отдаёт 404")
+    status, body = fetch(base + "no-such-page-xyz/")
+    if status == 200 and args.target == "gitverse-pages":
+        # GitVerse Pages отдаёт на любой несуществующий адрес свою заглушку «Страница не найдена»
+        # с кодом 200 («мягкий 404»). Исправить это со стороны сайта нельзя; проверяем хотя бы,
+        # что это заглушка платформы, а не наша страница, отданная по чужому адресу
+        soft = b"build-marker" not in body
+        check(soft, f"{status} несуществующая страница: заглушка платформы (мягкий 404 GitVerse Pages)")
+        if soft and os.environ.get("GITHUB_ACTIONS"):
+            print("::warning title=check_site::GitVerse Pages отвечает 200 вместо 404 на несуществующие страницы")
+    else:
+        check(status == 404, f"{status} несуществующая страница отдаёт 404")
 
     for old, target in REDIRECTS.items():
         status, body = fetch(base + old)
