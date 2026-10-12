@@ -13,7 +13,7 @@ from pathlib import Path
 
 # -- Проект ------------------------------------------------------------------
 project = "Результаты исследований"
-author = "crasavella04"
+author = "Бердечников Андрей Николаевич"
 copyright = "тексты — CC BY 4.0, код — MIT, данные — CC0"
 language = "ru"
 
@@ -108,7 +108,7 @@ html_context = {
         "version": (_version or {}).get("name", ""),
     },
     "citation": {
-        "authors": [{"name": "crasavella04", "orcid": ""}],   # заменить на ФИО и ORCID
+        "authors": [{"name": "Бердечников, Андрей Николаевич", "orcid": ""}],   # ORCID — если появится
         "institution": "Университет ИТМО",
         "doi": "",                                            # DOI архива в Zenodo
         "repository": "https://github.com/crasavella04/python-lab3",

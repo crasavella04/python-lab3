@@ -9,8 +9,10 @@ abstract: >-
   «эксперимент → артефакт → страница» с манифестом происхождения результатов, обзор отечественных
   CI/CD и хостингов, безопасность пайплайна, публикуемость результатов.
 authors:
-  # Заменить на family-names / given-names и добавить orcid: "https://orcid.org/0000-..."
-  - alias: crasavella04
+  - family-names: Бердечников
+    given-names: Андрей Николаевич
+    alias: crasavella04
+    affiliation: Университет ИТМО
 repository-code: "https://github.com/crasavella04/python-lab3"
 url: "https://crasavella04.github.io/python-lab3/"
 license: MIT
