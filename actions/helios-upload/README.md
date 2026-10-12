@@ -9,7 +9,7 @@ SSH host — and returns the public URL. Built for publishing static sites and f
 - **SSH key, not password.** A dedicated deploy key from a secret; written to a temp file and removed.
 - **Strict host key checking.** Helios host keys are bundled; no `ssh-keyscan` trust-on-first-use.
 - **rsync or tar.** rsync when it is available on both sides, otherwise `tar` over `ssh`
-  (Helios does not need anything installed).
+  (Helios already has rsync; tar is the fallback for servers without it).
 - **`delete`** like `rsync --delete`. With tar it unpacks next to the destination and swaps
   directories, so an interrupted upload never leaves a half-deleted site.
 - **Safe paths.** Destination is relative to the home directory; `..`, absolute paths and shell
@@ -94,7 +94,7 @@ follows the latest `v1.x.y` release.
 | Runner | Status |
 |---|---|
 | `ubuntu-24.04`, `ubuntu-22.04` (GitHub-hosted) | ✅ tested in CI on every push ([`test.yml`](.github/workflows/test.yml)) |
-| Helios ITMO, FreeBSD, `tar` method | ✅ used in production by [python-lab3](https://github.com/crasavella04/python-lab3) |
+| Helios ITMO (FreeBSD; `rsync` is installed, so `auto` picks it) | ✅ used in production by [python-lab3](https://github.com/crasavella04/python-lab3): 10 files in 7.7 s |
 | `macos-*` | ⚠️ should work (bash 3.2-compatible, `ssh`, `rsync`, `tar` present) — not tested in CI |
 | `windows-*` | ❌ not supported |
 | self-hosted Linux | needs `bash`, `ssh`, `tar`; `rsync` optional |
@@ -128,7 +128,7 @@ Action для GitHub Actions: загружает каталог на **Helios И
   после загрузки.
 - **Строгая проверка ключа хоста**: ключи Helios встроены в action, `ssh-keyscan` «на доверии» не
   нужен.
-- **rsync** там, где он есть с обеих сторон, иначе **tar через ssh**: на Helios ничего ставить не
+- **rsync** там, где он есть с обеих сторон (на Helios есть), иначе **tar через ssh**: на сервере ничего ставить не
   надо.
 - **`delete: true`** удаляет на сервере файлы, которых нет в `source`. В режиме tar новая версия
   распаковывается рядом, и каталоги меняются местами, поэтому оборванная загрузка не оставит
