@@ -22,8 +22,8 @@ inputs:
     required: true
   key:
     description: >-
-      Private SSH key (OpenSSH format) of a dedicated deploy key. Pass it from a secret:
-      `key: ${{ secrets.HELIOS_SSH_KEY }}`. It is written to a temporary file and removed afterwards.
+      Private SSH key (OpenSSH format) of a dedicated deploy key. Pass it from a repository
+      secret (e.g. secrets.HELIOS_SSH_KEY). It is written to a temporary file and removed afterwards.
     required: true
   source:
     description: Local directory to upload (its contents, not the directory itself).
