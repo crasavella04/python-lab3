@@ -22,9 +22,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-PAGES = ["", "t1/", "t2/", "t3/", "t4/", "t5/", "practice/", "p2/", "p3/", "p4/", "p5/", "about/", "debugging/", "license/"]
+PAGES = ["", "t2/", "t4/", "p3/", "p4/", "about/", "debugging/", "license/"]
 # Старые адреса, которые должны продолжать работать (страница перенесена → переадресация)
-REDIRECTS = {"theory/": "../t1/"}
+REDIRECTS = {"theory/": "../"}   # раньше вела на T1; T1 снята с сайта, теперь — на главную
 ASSETS = [
     "_static/katex/katex.min.js",
     "_static/katex/auto-render.min.js",
