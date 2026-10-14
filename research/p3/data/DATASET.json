@@ -1,9 +1,9 @@
 {
   "file": "research/p3/data/measurements.csv",
-  "version": "1.1",
-  "sha256": "97dea65c46600e5245e56df832bb1a3da731ec5ef0d34de476549fd08da15885",
-  "rows": 380,
-  "changes": "добавлена партия из 80 измерений режима C после обновления ПО (отклик быстрее)",
+  "version": "1.0",
+  "sha256": "26e297195a7a7cdd0dec47b32861bd1d1dd6fc8a478376cb4510eca72125b50a",
+  "rows": 300,
+  "changes": "исходные измерения: по 100 в режимах A, B, C",
   "source": "синтетика: логнормальное время отклика, research/p3/data/make_dataset.py",
   "license": "CC0-1.0"
 }
